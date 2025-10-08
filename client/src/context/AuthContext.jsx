@@ -68,6 +68,7 @@ export const AuthProvider = ({ children }) => {
         user,
         userProfile,
         isLoading,
+        userRole: userProfile?.role, // Explicitly provide userRole
         // Pass derived sets directly
         userBookings,
         userWaitlist,
