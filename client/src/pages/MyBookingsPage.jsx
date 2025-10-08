@@ -74,8 +74,9 @@ const response = await fetch(`${API_BASE_URL}/users/bookings`, { headers });
     
         const cancelBooking = async (bookingId) => {
             if (!user) return;
+            const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
             const headers = await getAuthHeader();
-            const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}`, {
+            const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}`, {
                 method: 'DELETE',
                 headers
             });

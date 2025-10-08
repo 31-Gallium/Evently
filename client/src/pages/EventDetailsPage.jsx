@@ -54,7 +54,7 @@ const response = await fetch(`${API_BASE_URL}/events/${id}`);
       if (!user) { navigate('/login'); return; }
       setActionError('');
       try {
-          const response = await fetch(`http://localhost:5000/api/${apiEndpoint}`, {
+          const response = await fetch(`${API_BASE_URL}/${apiEndpoint}`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', 'x-firebase-uid': user.uid },
               body: JSON.stringify(body),
@@ -96,8 +96,9 @@ const EventDetailsPage = () => {
 
     const handleHype = async () => {
         if (!user) return;
+        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
         const headers = await getAuthHeader();
-        const response = await fetch(`http://localhost:5000/api/events/${id}/hype`, {
+        const response = await fetch(`${API_BASE_URL}/events/${id}/hype`, {
             method: isHyped ? 'DELETE' : 'POST',
             headers
         });
@@ -109,8 +110,9 @@ const EventDetailsPage = () => {
 
     const handleWatchlist = async () => {
         if (!user) return;
+        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
         const headers = await getAuthHeader();
-        const response = await fetch(`http://localhost:5000/api/watchlist`, {
+        const response = await fetch(`${API_BASE_URL}/watchlist`, {
             method: isOnWatchlist ? 'DELETE' : 'POST',
             headers,
             body: JSON.stringify({ eventId: id })
@@ -123,8 +125,9 @@ const EventDetailsPage = () => {
 
     const handleBooking = async () => {
         if (!user) return;
+        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
         const headers = await getAuthHeader();
-        const response = await fetch(`http://localhost:5000/api/bookings`, {
+        const response = await fetch(`${API_BASE_URL}/bookings`, {
             method: 'POST',
             headers,
             body: JSON.stringify({ eventId: id })
@@ -156,7 +159,8 @@ const EventDetailsPage = () => {
     });
 
     try {
-        const url = `http://localhost:5000/api/watchlist${!wasInWatchlist ? '' : `/${id}`}`;
+        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+        const url = `${API_BASE_URL}/watchlist${!wasInWatchlist ? '' : `/${id}`}`;
         const method = !wasInWatchlist ? 'POST' : 'DELETE';
         const headers = { 'Content-Type': 'application/json', 'x-firebase-uid': user.uid };
         const body = !wasInWatchlist ? JSON.stringify({ eventId: parseInt(id) }) : undefined;

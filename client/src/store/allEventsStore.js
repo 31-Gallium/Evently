@@ -44,8 +44,8 @@ const response = await fetch(`${API_BASE_URL}/events');
     try {
       const endpoint = user.role === 'ADMIN' ? '/api/admin/events' : '/api/organizer/events';
       const headers = await getAuthHeader();
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
-        method: 'POST',
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         headers,
         body: JSON.stringify(event),
       });
@@ -72,7 +72,8 @@ const response = await fetch(`${API_BASE_URL}/events');
     try {
       const endpoint = user.role === 'ADMIN' ? `/api/admin/events/${event.id}` : `/api/organizer/events/${event.id}`;
       const headers = await getAuthHeader();
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'PUT',
         headers,
         body: JSON.stringify(event),
@@ -98,7 +99,8 @@ const response = await fetch(`${API_BASE_URL}/events');
     try {
       const endpoint = user.role === 'ADMIN' ? `/api/admin/events/${eventId}` : `/api/calendar/events/${eventId}`;
       const headers = await getAuthHeader();
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'DELETE',
         headers,
       });
