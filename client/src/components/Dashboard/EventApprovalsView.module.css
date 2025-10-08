@@ -1,0 +1,68 @@
+
+.approvalsViewContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.approvalGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.approvalCard {
+    background-color: var(--background-secondary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.eventName {
+    font-weight: 500;
+}
+
+.cardBody p {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.cardFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: auto;
+}
+
+.approveButton, .rejectButton {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.approveButton {
+    background-color: var(--accent-color);
+    color: var(--text-on-accent);
+}
+
+.rejectButton {
+    background-color: var(--background-tertiary);
+    color: var(--text-primary);
+}

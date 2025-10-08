@@ -1,0 +1,36 @@
+
+.search-page-container {
+    padding: 2rem;
+    padding-top: 70px;
+}
+
+.search-page-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+}
+
+.search-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.no-results-container {
+    text-align: center;
+    padding: 4rem 2rem;
+    background-color: var(--background-secondary);
+    border-radius: 8px;
+}
+
+.no-results-suggestion {
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.skeleton-search-card {
+    background-color: var(--background-tertiary);
+    border-radius: 8px;
+    height: 124px;
+    animation: pulse 1.5s infinite ease-in-out;
+}

@@ -1,0 +1,57 @@
+
+.netflix-carousel-container {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.netflix-carousel {
+    display: flex;
+    align-items: center;
+}
+
+.carousel-header-extra {
+    position: absolute;
+    top: -2.5rem; /* Adjust as needed */
+    right: 0;
+    display: flex;
+    align-items: center;
+}
+
+.pagination-indicator {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.carousel-content {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+    flex-grow: 1;
+}
+
+.carousel-content::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+}
+
+.scroll-button {
+    background: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin: 0 0.5rem;
+    transition: background-color 0.3s ease;
+}
+
+.scroll-button:hover {
+    background-color: var(--background-tertiary);
+}

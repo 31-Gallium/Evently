@@ -1,0 +1,21 @@
+
+.appLayout {
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: var(--background-primary);
+    font-family: var(--font-sans);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+}
+
+.mainContent {
+    flex-grow: 1;
+}
+
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 4%;
+}

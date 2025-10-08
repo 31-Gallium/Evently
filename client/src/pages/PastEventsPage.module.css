@@ -1,0 +1,24 @@
+
+.pastEventsPage {
+    padding-top: 70px;
+}
+
+.pastEventsPage .header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.pastEventsPage .filters {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.pastEventsPage .searchInput, .pastEventsPage .dateInput {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    background-color: var(--background-secondary);
+    color: var(--text-primary);
+}

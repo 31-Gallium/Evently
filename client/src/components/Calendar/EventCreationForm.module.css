@@ -1,0 +1,78 @@
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+}
+
+.formColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.inputGroup label {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #ddd;
+}
+
+.inputGroup input[type='text'],
+.inputGroup textarea {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 15px;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.inputGroup input[type='text']:focus,
+.inputGroup textarea:focus {
+    outline: none;
+    border-color: rgba(0, 123, 255, 0.7);
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.3);
+}
+
+.inputGroup textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+.datePicker {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 15px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.thumbnailPreview {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.thumbnailPreview img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.fullWidth {
+    grid-column: span 1;
+}
+
+@media (max-width: 768px) {
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
+}

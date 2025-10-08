@@ -1,0 +1,46 @@
+
+.carousel-container {
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.carousel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.carousel-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.see-all-button {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.carousel .swiper-container {
+    padding-bottom: 20px; /* Space for navigation buttons */
+}
+
+.carousel .swiper-wrapper {
+    display: flex;
+    align-items: stretch; /* Ensures all cards are the same height */
+}
+
+.carousel .swiper-slide {
+    width: auto; /* Let Swiper handle the width */
+    height: auto; /* Ensures the slide fits the content */
+}
+
+.carousel-item {
+    margin: 0 5px;
+    flex-shrink: 0;
+}

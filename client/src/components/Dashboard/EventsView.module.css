@@ -1,0 +1,97 @@
+.eventsViewContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-height: 100%;
+}
+
+.mainContent {
+    flex-grow: 1;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.filters {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.searchInput, .filterSelect, .createButton {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    background-color: var(--background-secondary);
+    color: var(--text-primary);
+}
+
+.createButton {
+    background-color: var(--accent-color);
+    color: var(--text-on-accent);
+    cursor: pointer;
+}
+
+.viewToggle {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.viewToggle button {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.viewToggle button.active {
+    background-color: var(--accent-color);
+    color: var(--text-on-accent);
+    border-color: var(--accent-color);
+}
+
+.cardFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: auto;
+}
+
+.cardFooter button {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.loadMoreButton {
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    border: 1px solid var(--accent-color);
+    background-color: var(--accent-color);
+    color: var(--text-on-accent);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    align-self: center;
+    margin-top: 1.5rem;
+}
+
+.loadMoreButton:hover {
+    background-color: var(--accent-color-dark);
+}
+
+.calendarWrapper {
+    max-width: 100%;
+    overflow-x: auto;
+}

@@ -1,0 +1,86 @@
+
+.usersViewContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 100%;
+}
+
+.mainContent {
+    flex-grow: 1;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.filters {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.searchInput, .filterSelect {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    background-color: var(--background-secondary);
+    color: var(--text-primary);
+}
+
+.viewToggle {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.viewToggle button {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.viewToggle button.active {
+    background-color: var(--accent-color);
+    color: var(--text-on-accent);
+    border-color: var(--accent-color);
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    color: var(--text-on-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-right: 1rem;
+}
+
+.loadMoreButton {
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    border: 1px solid var(--accent-color);
+    background-color: var(--accent-color);
+    color: var(--text-on-accent);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    align-self: center;
+    margin-top: 1.5rem;
+}
+
+.loadMoreButton:hover {
+    background-color: var(--accent-color-dark);
+}

@@ -1,0 +1,91 @@
+.searchBar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.searchInput {
+    width: 0;
+    opacity: 0;
+    padding: 0.75rem 0;
+    border: none;
+    border-radius: 20px;
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: width 0.4s ease-in-out, opacity 0.3s ease-in-out, padding 0.3s ease-in-out;
+    pointer-events: none;
+}
+
+.searchBar.expanded .searchInput {
+    width: 300px; /* Or whatever width you prefer */
+    opacity: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    pointer-events: all;
+}
+
+.searchIcon {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-left: 0.5rem;
+}
+
+.inputContainer {
+    position: relative;
+}
+
+.searchResultsDropdown {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    width: 100%;
+    background-color: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    z-index: 1001;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.searchResultItem {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.searchResultItem:last-child {
+    border-bottom: none;
+}
+
+.searchResultItem:hover {
+    background-color: var(--background-tertiary);
+}
+
+.searchResultImage {
+    width: 80px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 1rem;
+}
+
+.searchResultInfo {
+    flex-grow: 1;
+}
+
+.searchResultName {
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.searchResultLocation {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}

@@ -1,0 +1,86 @@
+.authPageContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: var(--background-primary);
+}
+
+.authFormContainer {
+    background-color: var(--background-secondary);
+    padding: 3rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.authTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.authForm {
+    display: flex;
+    flex-direction: column;
+}
+
+.authInput {
+    background-color: var(--background-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.9rem 1.2rem;
+    border-radius: 8px;
+    margin-bottom: 1.2rem;
+    font-size: 1rem;
+}
+
+.authInput::placeholder {
+    color: var(--text-secondary);
+}
+
+.authButton {
+    background-color: var(--accent-color);
+    color: var(--text-on-accent);
+    border: none;
+    padding: 0.9rem 1.2rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.authButton:hover {
+    background-color: var(--accent-color-hover);
+}
+
+.authError {
+    color: var(--error-color);
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.authSwitch {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--text-secondary);
+}
+
+.authSwitchButton {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0.25rem;
+}
+
+.authSwitchButton:hover {
+    text-decoration: underline;
+}

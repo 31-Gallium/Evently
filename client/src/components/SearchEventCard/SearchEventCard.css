@@ -1,0 +1,57 @@
+
+.search-event-card {
+    display: block;
+    background-color: var(--background-secondary);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--border-color);
+}
+
+.search-event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.search-event-card-image-container {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+}
+
+.search-event-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.search-event-card-content {
+    padding: 1rem;
+}
+
+.search-event-card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.search-event-card-date,
+.search-event-card-location {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0 0 0.25rem 0;
+}
+
+.booked-badge-search {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: var(--accent-color);
+    color: var(--text-on-accent);
+    padding: 0.3rem 0.6rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
