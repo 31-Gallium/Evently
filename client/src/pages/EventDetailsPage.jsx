@@ -135,7 +135,22 @@ const EventDetailsPage = () => {
   if (error) return <div className="details-page"><p>Error: {error}</p></div>;
   if (!event) return <div className="details-page"><p>Event not found.</p></div>;
 
-  const { name, date, location, price, description, organizerName, imageUrl, capacity, ticketsSold, createdAt, hypeCount } = event;
+  const { name, date, location, price, description, organizerName, imageUrl, capacity, ticketsSold, createdAt, hypeCount, tags } = event;
+
+  const [currentImageUrl, setCurrentImageUrl] = useState('');
+
+  useEffect(() => {
+    if (imageUrl) {
+      setCurrentImageUrl(imageUrl);
+    } else {
+      setCurrentImageUrl(getFallbackImage(tags));
+    }
+  }, [imageUrl, tags]);
+
+  const handleImageError = () => {
+    setCurrentImageUrl(getFallbackImage(tags));
+  };
+
   const formattedDate = new Date(date).toLocaleString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
   const formattedPrice = price > 0 ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(price) : 'Free Event';
   const ticketsLeft = capacity - ticketsSold;
@@ -163,7 +178,7 @@ const EventDetailsPage = () => {
         <div className="details-content">
           <h1 className="details-page-title">{name}</h1>
           <div className="details-banner">
-            <img src={imageUrl || getFallbackImage(event.tags)} alt={name} className="details-banner-image" />
+            <img src={currentImageUrl} alt={name} className="details-banner-image" onError={handleImageError} />
           </div>
           <div className="details-actions">
             <button className={`action-button ${isHyped ? 'hyped' : ''}`} onClick={handleHype}>

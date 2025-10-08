@@ -9,7 +9,7 @@ const useUpcomingEventsStore = create((set) => ({
   fetchUpcomingEvents: async () => {
     try {
       // TODO: Create a dedicated upcoming events endpoint
-      const response = await fetch(`${API_BASE_URL}/events`); 
+      const response = await fetch(`${API_BASE_URL}/events?limit=21`); 
       if (!response.ok) throw new Error('Failed to fetch upcoming events');
       const allEvents = await response.json();
       // This filtering should ideally be done on the backend

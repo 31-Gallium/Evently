@@ -5,8 +5,8 @@ import { useAuth } from './context/AuthContext';
 import useAllEventsStore from './store/allEventsStore';
 import useTrendingEventsStore from './store/trendingEventsStore';
 import useUpcomingEventsStore from './store/upcomingEventsStore';
-import useTechEventsStore from './store/techEventsStore';
-import useMusicEventsStore from './store/musicEventsStore';
+import useBestSellingStore from './store/bestSellingStore';
+import useCategoryStore from './store/categoryStore';
 
 // Import Layout and Route Protection
 import Layout from './components/Layout';
@@ -34,8 +34,8 @@ function App() {
     useAllEventsStore.getState().fetchAllEvents();
     useTrendingEventsStore.getState().fetchTrendingEvents();
     useUpcomingEventsStore.getState().fetchUpcomingEvents();
-    useTechEventsStore.getState().fetchTechEvents();
-    useMusicEventsStore.getState().fetchMusicEvents();
+    useBestSellingStore.getState().fetchBestSellingEvents();
+    useCategoryStore.getState().fetchTagCounts();
   }, []);
 
     return (

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import useTrendingEventsStore from '../store/trendingEventsStore';
 import useUpcomingEventsStore from '../store/upcomingEventsStore';
 import useAllEventsStore from '../store/allEventsStore';
-import useTechEventsStore from '../store/techEventsStore';
-import useMusicEventsStore from '../store/musicEventsStore';
+import useBestSellingStore from '../store/bestSellingStore';
+import useCategoryStore from '../store/categoryStore';
 
 import HeroSection from '../components/HeroSection';
 import EventCarousel from '../components/EventCarousel';
@@ -12,12 +12,38 @@ import OrganizerCTA from '../components/OrganizerCTA';
 const HomePage = () => {
     const { trendingEvents } = useTrendingEventsStore();
     const { upcomingEvents } = useUpcomingEventsStore();
-    const { techEvents } = useTechEventsStore();
-    const { musicEvents } = useMusicEventsStore();
-    const { eventsLoading } = useAllEventsStore();
-    
-    // Use a more reliable featured event, e.g., the first upcoming event with an image
-    const featuredEvent = [...upcomingEvents, ...trendingEvents].find(e => e.imageUrl) || trendingEvents?.[0] || upcomingEvents?.[0];
+    const { bestSellingEvents } = useBestSellingStore();
+    const { allEvents, eventsLoading } = useAllEventsStore();
+    const { tagCounts } = useCategoryStore();
+
+    const featuredEvent = [...upcomingEvents, ...trendingEvents].find(e => e.imageUrl) || upcomingEvents?.[0];
+
+    // Logic to determine dynamic categories
+    const { mainCategoryEvents, otherEvents } = useMemo(() => {
+        const mainCategories = Object.entries(tagCounts)
+            .filter(([, count]) => count >= 12)
+            .map(([tag]) => tag);
+
+        const mainCategorySet = new Set(mainCategories);
+        const eventsInMainCategories = new Set();
+
+        const mainCategoryEvents = mainCategories.map(category => ({
+            title: category,
+            events: allEvents.filter(event => {
+                const eventTags = event.tags ? event.tags.split(',').map(t => t.trim()) : [];
+                const isInThisCategory = eventTags.includes(category);
+                if (isInThisCategory) {
+                    eventsInMainCategories.add(event.id);
+                }
+                return isInThisCategory;
+            })
+        }));
+
+        const otherEvents = allEvents.filter(event => !eventsInMainCategories.has(event.id));
+
+        return { mainCategoryEvents, otherEvents };
+    }, [tagCounts, allEvents]);
+
 
     return (
         <>
@@ -29,8 +55,15 @@ const HomePage = () => {
                     <>
                         <EventCarousel title="Upcoming Events" events={upcomingEvents} />
                         <EventCarousel title="Trending Events" events={trendingEvents} />
-                        <EventCarousel title="Top in Tech" events={techEvents} />
-                        <EventCarousel title="Music & Concerts" events={musicEvents} />
+                        <EventCarousel title="Best Selling" events={bestSellingEvents} />
+                        
+                        {mainCategoryEvents.map(category => (
+                            <EventCarousel key={category.title} title={category.title} events={category.events} />
+                        ))}
+
+                        {otherEvents.length > 0 && (
+                            <EventCarousel title="Other Events" events={otherEvents} />
+                        )}
                     </>
                 )}
             </div>

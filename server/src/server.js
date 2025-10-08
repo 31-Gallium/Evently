@@ -86,12 +86,14 @@ const createApp = (admin) => {
   app.get('/', (req, res) => res.json({ message: "Welcome to the Evently API!" }));
 
   app.get('/api/events', asyncHandler(async (req, res) => {
+      const limit = parseInt(req.query.limit) || 21;
       const events = await prisma.event.findMany({
           where: {
               date: { gte: new Date() },
               status: 'PUBLISHED'
           },
-          orderBy: [{ isFeatured: 'desc' }, { date: 'asc' }]
+          orderBy: [{ isFeatured: 'desc' }, { date: 'asc' }],
+          take: limit,
       });
       res.json(events);
   }));
@@ -114,9 +116,48 @@ const createApp = (admin) => {
               status: 'PUBLISHED'
           },
           orderBy: { hypeCount: 'desc' },
-          take: 10
+          take: 13,
       });
       res.json(events);
+  }));
+
+  app.get('/api/events/bestselling', asyncHandler(async (req, res) => {
+      const events = await prisma.event.findMany({
+          where: {
+              date: { gte: new Date() },
+              status: 'PUBLISHED',
+              capacity: { gt: 0 },
+          }
+      });
+
+      const eventsWithRatio = events.map(event => ({
+          ...event,
+          soldRatio: event.ticketsSold / event.capacity
+      }));
+
+      eventsWithRatio.sort((a, b) => b.soldRatio - a.soldRatio);
+
+      res.json(eventsWithRatio.slice(0, 10));
+  }));
+
+  app.get('/api/tags/counts', asyncHandler(async (req, res) => {
+      const events = await prisma.event.findMany({
+          where: { status: 'PUBLISHED' },
+          select: { tags: true }
+      });
+
+      const tagCounts = {};
+      events.forEach(event => {
+          if (event.tags) {
+              const tags = event.tags.split(',').map(t => t.trim());
+              tags.forEach(tag => {
+                  if (tag) {
+                      tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+                  }
+              });
+          }
+      });
+      res.json(tagCounts);
   }));
 
   app.get('/api/events/search', asyncHandler(async (req, res) => {
