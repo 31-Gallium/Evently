@@ -12,6 +12,13 @@
 
 .mainContent {
     flex-grow: 1;
+    padding-top: 70px; /* Add padding to account for fixed TopBar */
+}
+
+@media (max-width: 768px) {
+    .mainContent {
+        padding-bottom: 70px; /* Add padding to account for fixed mobile Footer */
+    }
 }
 
 .container {

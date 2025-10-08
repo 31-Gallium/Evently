@@ -11,6 +11,7 @@ const Layout = () => {
             <main className={styles.mainContent}>
                 <Outlet />
             </main>
+            <Footer />
 
         </div>
     );
