@@ -7,24 +7,23 @@ dotenv.config();
 
 const prisma = new PrismaClient();
 
-// CORS configuration
-const whitelist = ['http://localhost:3000', 'https://evently-kbj3.onrender.com'];
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  allowedHeaders: "Content-Type,Authorization",
-  credentials: true
-};
-
 const createApp = (admin) => {
   const app = express();
-  app.use(cors(corsOptions));
+
+  // More robust CORS configuration
+  const whitelist = ['http://localhost:3000', 'https://evently-kbj3.onrender.com'];
+  app.use(cors({
+    origin: (origin, callback) => {
+      if (whitelist.includes(origin) || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
