@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-
 import { getAuthHeader } from '../utils/auth';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const useAllEventsStore = create((set, get) => ({
   allEvents: [],
@@ -21,9 +22,7 @@ const useAllEventsStore = create((set, get) => ({
 
     set({ eventsLoading: true });
     try {
-      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-// ...
-const response = await fetch(`${API_BASE_URL}/events');
+      const response = await fetch(`${API_BASE_URL}/events`);
       if (!response.ok) throw new Error('Failed to fetch events');
       const eventsData = await response.json();
       const tags = [...new Set(eventsData.flatMap(e => e.tags ? e.tags.split(',') : []))];
@@ -42,10 +41,10 @@ const response = await fetch(`${API_BASE_URL}/events');
     set(state => ({ allEvents: [eventWithTempId, ...state.allEvents] }));
 
     try {
-      const endpoint = user.role === 'ADMIN' ? '/api/admin/events' : '/api/organizer/events';
+      const endpoint = user.role === 'ADMIN' ? '/admin/events' : '/organizer/events';
       const headers = await getAuthHeader();
-      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'POST',
         headers,
         body: JSON.stringify(event),
       });
@@ -70,9 +69,8 @@ const response = await fetch(`${API_BASE_URL}/events');
     }));
 
     try {
-      const endpoint = user.role === 'ADMIN' ? `/api/admin/events/${event.id}` : `/api/organizer/events/${event.id}`;
+      const endpoint = user.role === 'ADMIN' ? `/admin/events/${event.id}` : `/organizer/events/${event.id}`;
       const headers = await getAuthHeader();
-      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'PUT',
         headers,
@@ -97,9 +95,8 @@ const response = await fetch(`${API_BASE_URL}/events');
     set(state => ({ allEvents: state.allEvents.filter(e => e.id !== eventId) }));
 
     try {
-      const endpoint = user.role === 'ADMIN' ? `/api/admin/events/${eventId}` : `/api/calendar/events/${eventId}`;
+      const endpoint = user.role === 'ADMIN' ? `/admin/events/${eventId}` : `/calendar/events/${eventId}`;
       const headers = await getAuthHeader();
-      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'DELETE',
         headers,

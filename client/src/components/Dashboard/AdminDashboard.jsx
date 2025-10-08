@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from './AdminDashboard.module.css';
 import CalendarView from '../Calendar/CalendarView';
 import { Users, Briefcase, CheckSquare, BarChart2 } from 'lucide-react';
@@ -8,22 +8,17 @@ import { UsersView } from './UsersView';
 import { EventsView } from './EventsView';
 import { OrganizerRequestsView } from './OrganizerRequestsView';
 import { EventApprovalsView } from './EventApprovalsView';
+import { getAuthHeader } from '../../utils/auth';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-const AdminDashboard = ({ user, userProfile, onEventsUpdate }) => {
+const AdminDashboard = ({ user, onEventsUpdate }) => {
     const [adminView, setAdminView] = useState('dashboard');
     const [viewingEventId, setViewingEventId] = useState(null);
     const [eventsView, setEventsView] = useState('list'); // 'list' or 'calendar'
     const [events, setEvents] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-
-import { getAuthHeader } from '../../utils/auth';
-
-// ... (imports)
-
-const AdminDashboard = ({ user, userProfile, onEventsUpdate }) => {
-    // ... (state)
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
 
     const fetchData = useCallback(async () => {
         if (!user) return;
@@ -32,7 +27,6 @@ const AdminDashboard = ({ user, userProfile, onEventsUpdate }) => {
             const headers = await getAuthHeader();
             const eventsRes = await fetch(`${API_BASE_URL}/admin/events`, { headers });
             const eventsData = await eventsRes.json();
-            console.log('Fetched events data:', eventsData);
             const formattedEvents = eventsData.map(event => ({
                 id: event.id,
                 title: event.name,
@@ -41,14 +35,10 @@ const AdminDashboard = ({ user, userProfile, onEventsUpdate }) => {
                 allDay: true,
                 ...event
             }));
-            console.log('Formatted events:', formattedEvents);
             setEvents(formattedEvents);
         } catch (error) { console.error("Failed to fetch events:", error); }
         setIsLoading(false);
     }, [user]);
-
-    // ... (rest of the component)
-};
 
     useEffect(() => {
         if (user && adminView === 'events') {
@@ -69,7 +59,6 @@ const AdminDashboard = ({ user, userProfile, onEventsUpdate }) => {
             case 'approvals':
                 return <EventApprovalsView user={user} onEventsUpdate={onEventsUpdate} />;
             case 'events':
-                console.log('Rendering events view with events:', events);
                 return (
                     <div>
                         <div className={styles.viewToggle}>
@@ -89,8 +78,6 @@ const AdminDashboard = ({ user, userProfile, onEventsUpdate }) => {
         }
     };
 
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
-
     const handleMouseEnter = () => {
         setIsSidebarCollapsed(false);
     };
@@ -100,13 +87,12 @@ const AdminDashboard = ({ user, userProfile, onEventsUpdate }) => {
     };
 
     return (
-        <div className={styles.adminContainer} style={{paddingTop: '70px'}}>
+        <div className={styles.adminContainer} style={{ paddingTop: '70px' }}>
             <aside
                 className={`${styles.sidebar} ${isSidebarCollapsed ? styles.collapsed : ''}`}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
             >
-
                 <nav className={styles.nav}>
                     <a href="#" onClick={() => setAdminView('dashboard')} className={adminView === 'dashboard' ? styles.active : ''}><BarChart2 /> <span>Dashboard</span></a>
                     <a href="#" onClick={() => setAdminView('organizerRequests')} className={adminView === 'organizerRequests' ? styles.active : ''}><Briefcase /> <span>Organizer Requests</span></a>
@@ -121,6 +107,5 @@ const AdminDashboard = ({ user, userProfile, onEventsUpdate }) => {
         </div>
     );
 };
-
 
 export default AdminDashboard;

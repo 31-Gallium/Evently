@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useContext } from 'react';
-import flatpickr from 'flatpickr';
+import React, { useState, useEffect } from 'react';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/dark.css';
 import styles from './CalendarView.module.css';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import EventFormModal from './EventFormModal';
+import { getAuthHeader } from '../../utils/auth';
+
 
 const truncate = (str, n) => {
-    return (str.length > n) ? str.substr(0, n-1) + "..." : str;
+    return (str.length > n) ? str.substr(0, n - 1) + "..." : str;
 };
 
 const processOverlappingEvents = (events) => {
@@ -44,6 +45,9 @@ const processOverlappingEvents = (events) => {
 const pillColors = ['#2563eb', '#ca8a04', '#9333ea', '#d97706', '#059669'];
 
 const getColorForEvent = (eventId) => {
+    if (typeof eventId !== 'string' && typeof eventId !== 'number') {
+        return pillColors[0];
+    }
     const hash = eventId.toString().split('').reduce((acc, char) => {
         return char.charCodeAt(0) + ((acc << 5) - acc);
     }, 0);
@@ -60,6 +64,8 @@ const CalendarView = ({ events: propEvents }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [currentView, setCurrentView] = useState('month');
     const [events, setEvents] = useState({});
+    
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
     const openModal = (dateStr, event = null) => {
         setSelectedDateStr(dateStr);
@@ -124,7 +130,7 @@ const CalendarView = ({ events: propEvents }) => {
 
     useEffect(() => {
         const processEvents = (eventsData) => {
-            console.log("Processing events:", eventsData);
+            if (!eventsData) return;
             const eventsByDate = eventsData.reduce((acc, event) => {
                 const dateStr = new Date(event.date).toISOString().split('T')[0];
                 if (!acc[dateStr]) {
@@ -133,24 +139,7 @@ const CalendarView = ({ events: propEvents }) => {
                 acc[dateStr].push(event);
                 return acc;
             }, {});
-            console.log("Processed events by date:", eventsByDate);
             setEvents(eventsByDate);
-        }
-
-        console.log("CalendarView useEffect triggered");
-        console.log("user:", user);
-        console.log("propEvents:", propEvents);
-
-import { getAuthHeader } from '../../utils/auth';
-
-// ... (imports)
-
-const CalendarView = ({ events: propEvents }) => {
-    // ... (state)
-
-    useEffect(() => {
-        const processEvents = (eventsData) => {
-            // ... (logic)
         }
 
         if (propEvents) {
@@ -159,7 +148,7 @@ const CalendarView = ({ events: propEvents }) => {
             const fetchEvents = async () => {
                 try {
                     const headers = await getAuthHeader();
-                    const response = await fetch(`/api/calendar/events`, { headers });
+                    const response = await fetch(`${API_BASE_URL}/calendar/events`, { headers });
                     if (!response.ok) {
                         throw new Error('Failed to fetch events');
                     }
@@ -174,10 +163,8 @@ const CalendarView = ({ events: propEvents }) => {
                 fetchEvents();
             }
         }
-    }, [user, propEvents]);
+    }, [user, propEvents, API_BASE_URL]);
 
-    // ... (rest of the component)
-};
 
     const renderMonthView = () => {
         const year = currentDate.getFullYear();
@@ -222,14 +209,14 @@ const CalendarView = ({ events: propEvents }) => {
     }
 
     const renderDayWeekView = (isWeek) => {
-        const days = isWeek ? Array.from({length: 7}, (_, i) => { const d = new Date(currentDate); d.setDate(d.getDate() - d.getDay() + i); return d; }) : [new Date(currentDate)];
+        const days = isWeek ? Array.from({ length: 7 }, (_, i) => { const d = new Date(currentDate); d.setDate(d.getDate() - d.getDay() + i); return d; }) : [new Date(currentDate)];
         const timeSlots = Array.from({ length: 24 }, (_, i) => i);
 
         return (
             <div className={styles.dayWeekView}>
                 <div className={styles.timeColumn}>
                     <div className={styles.allDayLabel}>All-day</div>
-                                        {timeSlots.map(hour => {
+                    {timeSlots.map(hour => {
                         const today = new Date();
                         const isPast = new Date(currentDate).setHours(hour, 0, 0, 0) < today.getTime();
                         return (
@@ -244,7 +231,7 @@ const CalendarView = ({ events: propEvents }) => {
                     })}
                 </div>
                 <div className={styles.dayWeekGridContainer}>
-                    <div className={styles.dayWeekGrid} style={{gridTemplateColumns: `repeat(${days.length}, 1fr)`}}>
+                    <div className={styles.dayWeekGrid} style={{ gridTemplateColumns: `repeat(${days.length}, 1fr)` }}>
                         {days.map(day => {
                             const dateStr = day.toISOString().split('T')[0];
                             const dayEvents = events[dateStr] || [];

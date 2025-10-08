@@ -2,43 +2,36 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './EventDetailsPage.css';
-
+import { getAuthHeader } from '../utils/auth';
 import { IconFire, IconCheck, IconPlus, IconCalendar, IconMapPin, IconUsers, IconTicket, IconInfo } from '../utils/Icons';
 import { getFallbackImage } from '../utils/imageHelpers';
 
 const EventDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user, userProfile, userHypes, userWatchlist, userBookings, userWaitlist, setUserBookings, setUserWaitlist, setUserHypes, setUserWatchlist } = useAuth();
+  // Consolidate all required values from useAuth
+  const { user, userProfile, refetchProfile, userHypes, userBookings, userWaitlist } = useAuth();
 
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [actionStatus, setActionStatus] = useState('');
   const [actionError, setActionError] = useState('');
 
-  const [isHyped, setIsHyped] = useState(userHypes.has(parseInt(id)));
-  const [isInWatchlist, setIsInWatchlist] = useState(userWatchlist.has(parseInt(id)));
+  // Define API_BASE_URL once
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-  useEffect(() => {
-    setIsHyped(userHypes.has(parseInt(id)));
-  }, [userHypes, id]);
-
-  useEffect(() => {
-    setIsInWatchlist(userWatchlist.has(parseInt(id)));
-  }, [userWatchlist, id]);
-
-  const isBookedByCurrentUser = userBookings.has(parseInt(id));
-  const isOnWaitlistByCurrentUser = userWaitlist.has(parseInt(id));
+  // Derived state should be computed directly or with useMemo for performance
+  const isHyped = userHypes.has(parseInt(id));
+  const isInWatchlist = userProfile?.watchlist?.some(item => item.eventId === parseInt(id));
+  const isBooked = userBookings.has(parseInt(id));
+  const isOnWaitlist = userWaitlist.has(parseInt(id));
 
   useEffect(() => {
     const fetchEvent = async () => {
       if (!id) return;
       setLoading(true);
       try {
-        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-// ...
-const response = await fetch(`${API_BASE_URL}/events/${id}`);
+        const response = await fetch(`${API_BASE_URL}/events/${id}`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         setEvent(await response.json());
       } catch (e) {
@@ -48,141 +41,95 @@ const response = await fetch(`${API_BASE_URL}/events/${id}`);
       }
     };
     fetchEvent();
-  }, [id]);
-  
-  const createBooking = async (apiEndpoint, body, successCallback) => {
-      if (!user) { navigate('/login'); return; }
-      setActionError('');
-      try {
-          const response = await fetch(`${API_BASE_URL}/${apiEndpoint}`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'x-firebase-uid': user.uid },
-              body: JSON.stringify(body),
-          });
-          const data = await response.json();
-          if (!response.ok) { throw new Error(data.error || 'Action failed.'); }
-          successCallback();
-      } catch (err) {
-          setActionStatus('error');
-          setActionError(err.message);
+  }, [id, API_BASE_URL]);
+
+  // Unified handler for Hype
+  const handleHype = async () => {
+    if (!user) { navigate('/login'); return; }
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetch(`${API_BASE_URL}/events/${id}/hype`, {
+        method: isHyped ? 'DELETE' : 'POST',
+        headers
+      });
+      if (response.ok) {
+        refetchProfile(); // Refetch user profile to update hype status
+        // Optimistically update event hype count for immediate feedback
+        setEvent(prev => ({ ...prev, hypeCount: isHyped ? prev.hypeCount - 1 : prev.hypeCount + 1 }));
+      } else {
+        throw new Error('Failed to update hype status');
       }
+    } catch (err) {
+      console.error(err);
+      setActionError('Could not update hype status.');
+    }
   };
 
-  const handleBookNow = async () => {
-    setActionStatus('booking');
-    createBooking('bookings', { eventId: event.id }, () => {
-        setUserBookings(prev => new Set(prev).add(event.id));
-        setActionStatus('success');
-    });
+  // Unified handler for Watchlist
+  const handleWatchlist = async () => {
+    if (!user) { navigate('/login'); return; }
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetch(`${API_BASE_URL}/watchlist`, {
+        method: isInWatchlist ? 'DELETE' : 'POST',
+        headers,
+        body: JSON.stringify({ eventId: parseInt(id) })
+      });
+      if (response.ok) {
+        refetchProfile(); // Refetch user profile to update watchlist
+      } else {
+        throw new Error('Failed to update watchlist');
+      }
+    } catch (err) {
+      console.error(err);
+      setActionError('Could not update watchlist.');
+    }
   };
 
+  // Unified handler for Booking
+  const handleBooking = async () => {
+    if (!user) { navigate('/login'); return; }
+    try {
+      const headers = await getAuthHeader();
+      const response = await fetch(`${API_BASE_URL}/bookings`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ eventId: parseInt(id) })
+      });
+      if (response.ok) {
+        refetchProfile(); // Refetch user profile to update bookings
+      } else {
+        const data = await response.json();
+        throw new Error(data.error || 'Booking failed.');
+      }
+    } catch (err) {
+      console.error(err);
+      setActionError(err.message);
+    }
+  };
+  
+  // Unified handler for Waitlist
   const handleWaitlistJoin = async () => {
-    setActionStatus('joining_waitlist');
-    createBooking('waitlist', { eventId: event.id }, () => {
-        setUserWaitlist(prev => new Set(prev).add(event.id));
-        setActionStatus('waitlist_success');
-    });
-  };
-
-import { getAuthHeader } from '../utils/auth';
-
-// ... (imports)
-
-const EventDetailsPage = () => {
-    // ... (state)
-    const { user, userProfile, refetchProfile } = useAuth();
-
-    // ... (useEffect)
-
-    const handleHype = async () => {
-        if (!user) return;
-        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+    if (!user) { navigate('/login'); return; }
+    try {
         const headers = await getAuthHeader();
-        const response = await fetch(`${API_BASE_URL}/events/${id}/hype`, {
-            method: isHyped ? 'DELETE' : 'POST',
-            headers
-        });
-
-        if (response.ok) {
-            refetchProfile();
-        }
-    };
-
-    const handleWatchlist = async () => {
-        if (!user) return;
-        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-        const headers = await getAuthHeader();
-        const response = await fetch(`${API_BASE_URL}/watchlist`, {
-            method: isOnWatchlist ? 'DELETE' : 'POST',
-            headers,
-            body: JSON.stringify({ eventId: id })
-        });
-
-        if (response.ok) {
-            refetchProfile();
-        }
-    };
-
-    const handleBooking = async () => {
-        if (!user) return;
-        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-        const headers = await getAuthHeader();
-        const response = await fetch(`${API_BASE_URL}/bookings`, {
+        const response = await fetch(`${API_BASE_URL}/waitlist`, {
             method: 'POST',
             headers,
-            body: JSON.stringify({ eventId: id })
+            body: JSON.stringify({ eventId: parseInt(id) })
         });
-
         if (response.ok) {
-            refetchProfile();
-        }
-    };
-
-    // ... (render)
-};
-
-  const handleWatchlist = async () => {
-    if (!user) {
-        navigate('/login');
-        return;
-    }
-
-    const wasInWatchlist = isInWatchlist;
-    setUserWatchlist(prev => {
-        const newSet = new Set(prev);
-        if (!wasInWatchlist) {
-            newSet.add(parseInt(id));
+            refetchProfile(); // Refetch to update waitlist status
         } else {
-            newSet.delete(parseInt(id));
+            const data = await response.json();
+            throw new Error(data.error || 'Joining waitlist failed.');
         }
-        return newSet;
-    });
-
-    try {
-        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-        const url = `${API_BASE_URL}/watchlist${!wasInWatchlist ? '' : `/${id}`}`;
-        const method = !wasInWatchlist ? 'POST' : 'DELETE';
-        const headers = { 'Content-Type': 'application/json', 'x-firebase-uid': user.uid };
-        const body = !wasInWatchlist ? JSON.stringify({ eventId: parseInt(id) }) : undefined;
-
-        const response = await fetch(url, { method, headers, body });
-
-        if (!response.ok) {
-            throw new Error('Failed to update watchlist');
-        }
-    } catch (error) {
-        console.error(error);
-        setUserWatchlist(prev => {
-            const newSet = new Set(prev);
-            if (wasInWatchlist) {
-                newSet.add(parseInt(id));
-            } else {
-                newSet.delete(parseInt(id));
-            }
-            return newSet;
-        });
+    } catch (err) {
+        console.error(err);
+        setActionError(err.message);
     }
   };
+
 
   if (loading) return <div className="details-page"><p>Loading event details...</p></div>;
   if (error) return <div className="details-page"><p>Error: {error}</p></div>;
@@ -193,19 +140,20 @@ const EventDetailsPage = () => {
   const formattedPrice = price > 0 ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(price) : 'Free Event';
   const ticketsLeft = capacity - ticketsSold;
   const isSoldOut = ticketsLeft <= 0;
-  const isBooked = actionStatus === 'success' || isBookedByCurrentUser;
-  const isOnWaitlist = actionStatus === 'waitlist_success' || isOnWaitlistByCurrentUser;
   const organizerLink = `/organization/${organizerName.replace(/ /g, '-')}`;
 
   const renderBookingButton = () => {
     if (userProfile && userProfile.role === 'ADMIN') {
       return <button className="book-button" disabled>Admins cannot book</button>;
     }
+    if (isBooked) {
+        return <div className="booking-success">✔ Booked!</div>;
+    }
     if (isSoldOut) {
       if (isOnWaitlist) return <button className="book-button" disabled>On Waitlist</button>;
-      return <button onClick={handleWaitlistJoin} className="book-button" disabled={actionStatus === 'joining_waitlist'}>{actionStatus === 'joining_waitlist' ? 'Joining...' : 'Join Waitlist'}</button>;
+      return <button onClick={handleWaitlistJoin} className="book-button">Join Waitlist</button>;
     }
-    return (<button onClick={handleBookNow} className="book-button" disabled={isBooked || actionStatus === 'booking'}>{actionStatus === 'booking' ? 'Booking...' : 'Book Now'}</button>);
+    return (<button onClick={handleBooking} className="book-button">Book Now</button>);
   };
 
   return (
@@ -218,9 +166,9 @@ const EventDetailsPage = () => {
             <img src={imageUrl || getFallbackImage(event.tags)} alt={name} className="details-banner-image" />
           </div>
           <div className="details-actions">
-            <button className={`action-button ${isHyped ? 'hyped' : ''}`} onClick={handleHype} disabled={isHyped}>
+            <button className={`action-button ${isHyped ? 'hyped' : ''}`} onClick={handleHype}>
               <IconFire />
-              <span>{hypeCount + (isHyped && !userHypes.has(parseInt(id)) ? 1 : 0)}</span>
+              <span>{hypeCount}</span>
             </button>
             <button className={`action-button ${isInWatchlist ? 'hyped' : ''}`} onClick={handleWatchlist}>
               {isInWatchlist ? <IconCheck /> : <IconPlus />}
@@ -239,9 +187,9 @@ const EventDetailsPage = () => {
           <div className="price-tag">{formattedPrice}</div>
           <div className={`booking-button-wrapper ${isBooked ? 'booked' : ''}`}>
             <div className="button-face-front">{renderBookingButton()}</div>
-            <div className="button-face-back"><div className="booking-success">✔ Booked!</div></div>
+            {isBooked && <div className="button-face-back"><div className="booking-success">✔ Booked!</div></div>}
           </div>
-          {actionStatus === 'error' && <p className="booking-error">{actionError}</p>}
+          {actionError && <p className="booking-error">{actionError}</p>}
         </div>
       </div>
     </div>

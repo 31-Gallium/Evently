@@ -1,49 +1,44 @@
-
-
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './AdminStatsDashboard.module.css';
 import StatCard from './StatCard';
 import BarChart from './BarChart';
 import ReactECharts from 'echarts-for-react';
 import { IconUsers, IconCalendar, IconTicket } from '../../utils/Icons';
-
 import { SkeletonStatCard } from '../skeletons';
+import { getAuthHeader } from '../../utils/auth';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const AdminStatsDashboard = ({ user }) => {
     const [stats, setStats] = useState(null);
-import { getAuthHeader } from '../../utils/auth';
 
-// ... (imports)
-
-const AdminStatsDashboard = ({ user }) => {
-    const [stats, setStats] = useState(null);
     useEffect(() => {
         const fetchStats = async () => {
+            if (!user) return;
             try {
                 const headers = await getAuthHeader();
                 const res = await fetch(`${API_BASE_URL}/admin/stats`, { headers });
+                if (!res.ok) throw new Error('Failed to fetch stats');
                 const data = await res.json();
-                console.log('Stats data:', JSON.stringify(data, null, 2));
                 setStats(data);
-            } catch (err) { console.error(err); }
+            } catch (err) {
+                console.error(err);
+            }
         };
         fetchStats();
-    }, []);
+    }, [user]);
 
-    // ... (rest of the component)
-};
+    if (!stats) {
+        return (
+            <div className={styles.statsGrid}>
+                <SkeletonStatCard />
+                <SkeletonStatCard />
+                <SkeletonStatCard />
+                <SkeletonStatCard />
+            </div>
+        );
+    }
 
-    if (!stats) return (
-        <div className={styles.statsGrid}>
-            <SkeletonStatCard />
-            <SkeletonStatCard />
-            <SkeletonStatCard />
-            <SkeletonStatCard />
-        </div>
-    );
-    
     const formattedRevenue = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(stats.totalRevenue);
 
     const userRolesData = stats?.userRoleDistribution ? [
@@ -51,9 +46,6 @@ const AdminStatsDashboard = ({ user }) => {
         { name: 'Organizer', value: stats.userRoleDistribution.ORGANIZER || 0 },
         { name: 'User', value: stats.userRoleDistribution.USER || 0 },
     ] : [];
-
-    console.log('User Roles Data:', userRolesData);
-
 
     const aggregateData = (data) => {
         if (!data) return [];
@@ -141,7 +133,6 @@ const AdminStatsDashboard = ({ user }) => {
             </div>
         </div>
     );
-
 };
 
 export default AdminStatsDashboard;

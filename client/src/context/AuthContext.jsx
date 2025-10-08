@@ -1,6 +1,7 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from '../firebase';
+import { getAuthHeader } from '../utils/auth';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 const AuthContext = createContext(null);
@@ -8,149 +9,86 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
-    const [userBookings, setUserBookings] = useState(new Set());
-    const [userWaitlist, setUserWaitlist] = useState(new Set());
-    const [userHypes, setUserHypes] = useState(new Set()); // New state for hypes
-    const [userWatchlist, setUserWatchlist] = useState(new Set());
     const [isLoading, setIsLoading] = useState(true);
 
-    const fetchUserProfile = async (currentUser) => {
+    // Derived state for easier consumption in components
+    const userBookings = React.useMemo(() => new Set(userProfile?.bookings?.map(b => b.eventId) || []), [userProfile?.bookings]);
+    const userWaitlist = React.useMemo(() => new Set(userProfile?.waitlist?.map(w => w.eventId) || []), [userProfile?.waitlist]);
+    const userHypes = React.useMemo(() => new Set(userProfile?.hypes?.map(h => h.eventId) || []), [userProfile?.hypes]);
+
+    const fetchFullUserProfile = useCallback(async (currentUser) => {
         if (!currentUser) {
             setUserProfile(null);
-            setUserBookings(new Set());
-            setUserWaitlist(new Set());
-            setUserHypes(new Set());
+            setIsLoading(false);
             return;
         }
+        
+        setIsLoading(true);
         try {
-            // Fetch profile, bookings, waitlist, and hypes in parallel
-import { getAuthHeader } from '../utils/auth';
+            const headers = await getAuthHeader();
+            // Fetch all user-related data in parallel
+            const [profileRes, bookingsRes, waitlistRes, hypesRes, watchlistRes] = await Promise.all([
+                fetch(`${API_BASE_URL}/users/me`, { headers }),
+                fetch(`${API_BASE_URL}/users/bookings`, { headers }),
+                fetch(`${API_BASE_URL}/users/waitlist`, { headers }),
+                fetch(`${API_BASE_URL}/users/hypes`, { headers }),
+                fetch(`${API_BASE_URL}/users/watchlist`, { headers })
+            ]);
 
-const AuthContext = React.createContext();
+            // Check for network errors
+            if (!profileRes.ok) throw new Error('Failed to fetch user profile.');
 
-export function useAuth() {
-    return useContext(AuthContext);
-}
+            const profile = await profileRes.json();
+            const bookings = bookingsRes.ok ? await bookingsRes.json() : [];
+            const waitlist = waitlistRes.ok ? await waitlistRes.json() : [];
+            const hypes = hypesRes.ok ? await hypesRes.json() : [];
+            const watchlist = watchlistRes.ok ? await watchlistRes.json() : [];
 
-export function AuthProvider({ children }) {
-    const [user, setUser] = useState(null);
-    const [userRole, setUserRole] = useState(null);
-    const [userProfile, setUserProfile] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [version, setVersion] = useState(0);
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            setLoading(true);
-            if (currentUser) {
-                const headers = await getAuthHeader();
-                const [profileRes, bookingsRes, waitlistRes, hypesRes, watchlistRes] = await Promise.all([
-                    fetch(`${API_BASE_URL}/users/me`, { headers }),
-                    fetch(`${API_BASE_URL}/users/bookings`, { headers }),
-                    fetch(`${API_BASE_URL}/users/waitlist`, { headers }),
-                    fetch(`${API_BASE_URL}/users/hypes`, { headers }),
-                    fetch(`${API_BASE_URL}/users/watchlist`, { headers })
-                ]);
-
-                const profile = await profileRes.json();
-                const bookings = await bookingsRes.json();
-                const waitlist = await waitlistRes.json();
-                const hypes = await hypesRes.json();
-                const watchlist = await watchlistRes.json();
-
-                setUser(currentUser);
-                setUserRole(profile.role);
-                setUserProfile({ ...profile, bookings, waitlist, hypes, watchlist });
-            } else {
-                setUser(null);
-                setUserRole(null);
-                setUserProfile(null);
-            }
-            setLoading(false);
-        });
-
-        return unsubscribe;
-    }, [version]);
-
-            if (profileRes.ok) {
-                setUserProfile(await profileRes.json());
-            } else {
-                setUserProfile({ role: null });
-            }
-
-            if (bookingsRes.ok) {
-                const data = await bookingsRes.json();
-                setUserBookings(new Set(data.map(b => b.eventId)));
-            } else {
-                setUserBookings(new Set());
-            }
-
-            if (waitlistRes.ok) {
-                const data = await waitlistRes.json();
-                setUserWaitlist(new Set(data.map(w => w.eventId)));
-            } else {
-                setUserWaitlist(new Set());
-            }
-
-            if (hypesRes.ok) {
-                const data = await hypesRes.json();
-                setUserHypes(new Set(data.map(h => h.eventId)));
-            } else {
-                setUserHypes(new Set());
-            }
-
-            if (watchlistRes.ok) {
-                const data = await watchlistRes.json();
-                setUserWatchlist(new Set(data.map(w => w.eventId)));
-            } else {
-                setUserWatchlist(new Set());
-            }
-
-
+            // Combine all data into a single profile object
+            setUserProfile({ ...profile, bookings, waitlist, hypes, watchlist });
 
         } catch (error) {
             console.error("Failed to fetch user data:", error);
-            setUserProfile({ role: null });
-            setUserBookings(new Set());
-            setUserWaitlist(new Set());
-            setUserHypes(new Set());
-            setUserWatchlist(new Set());
+            setUserProfile(null); // Clear profile on error
+        } finally {
+            setIsLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            console.log("onAuthStateChanged", currentUser);
-            setIsLoading(true);
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
-            if (currentUser) {
-                await fetchUserProfile(currentUser);
-            }
-            setIsLoading(false);
+            fetchFullUserProfile(currentUser);
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [fetchFullUserProfile]);
 
     const value = {
         user,
         userProfile,
-        userRole: userProfile?.role,
+        isLoading,
+        // Pass derived sets directly
         userBookings,
         userWaitlist,
-        userHypes, // Provide hypes
-        userWatchlist,
-        isLoading,
-        refetchProfile: () => fetchUserProfile(user),
-        setUserBookings,
-        setUserWaitlist,
-        setUserHypes, // Provide setter for optimistic updates
-        setUserWatchlist,
+        userHypes,
+        // Watchlist is not a Set in the original logic, but an array. Let's keep it that way.
+        userWatchlist: userProfile?.watchlist || [],
+        // A function to manually refetch all profile data
+        refetchProfile: () => fetchFullUserProfile(user),
     };
 
-    return <AuthContext.Provider value={value}>{!isLoading && children}</AuthContext.Provider>;
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export const useAuth = () => {
-    return useContext(AuthContext);
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
 };

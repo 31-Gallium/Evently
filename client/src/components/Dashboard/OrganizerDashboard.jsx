@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from '../../App.module.css';
 import CalendarView from '../Calendar/CalendarView';
 import AdminEventAnalytics from './AdminEventAnalytics';
 import EventFormModal from '../Calendar/EventFormModal';
+import { getAuthHeader } from '../../utils/auth';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -13,26 +14,36 @@ const OrganizerDashboard = ({ user }) => {
     const [viewingEventId, setViewingEventId] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [eventToEdit, setEventToEdit] = useState(null);
-import { getAuthHeader } from '../../utils/auth';
-
-// ... (imports)
-
-const OrganizerDashboard = ({ user }) => {
-    // ... (state)
 
     const fetchMyEvents = useCallback(async () => {
         setIsLoading(true);
         try {
             const headers = await getAuthHeader();
             const response = await fetch(`${API_BASE_URL}/organizer/events`, { headers });
+            if (!response.ok) throw new Error('Failed to fetch events');
             setMyEvents(await response.json());
-        } catch (error) { console.error("Failed to fetch organizer events:", error); }
+        } catch (error) {
+            console.error("Failed to fetch organizer events:", error);
+        }
         setIsLoading(false);
     }, []);
 
-    useEffect(() => { if(!viewingEventId) fetchMyEvents(); }, [viewingEventId, fetchMyEvents]);
+    useEffect(() => {
+        if (!viewingEventId) {
+            fetchMyEvents();
+        }
+    }, [viewingEventId, fetchMyEvents]);
 
-    // ... (rest of the component)
+    const handleOpenEditModal = (event) => {
+        setEventToEdit(event);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setEventToEdit(null);
+        setIsModalOpen(false);
+        fetchMyEvents(); // Refetch events after modal is closed
+    };
 
     const handleSubmitForApproval = async (eventId) => {
         if (window.confirm('Are you sure you want to submit this event for approval?')) {
@@ -41,13 +52,12 @@ const OrganizerDashboard = ({ user }) => {
                 const response = await fetch(`${API_BASE_URL}/organizer/events/${eventId}/submit`, { method: 'PUT', headers });
                 if (!response.ok) throw new Error('Failed to submit event for approval');
                 fetchMyEvents();
-            } catch (error) { alert(`Error: ${error.message}`); }
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
         }
     };
-    
-    // ... (rest of the component)
-};
-    
+
     if (viewingEventId) {
         return <AdminEventAnalytics eventId={viewingEventId} user={user} onBack={() => setViewingEventId(null)} />;
     }
@@ -66,7 +76,7 @@ const OrganizerDashboard = ({ user }) => {
                     <table className={styles.adminTable}>
                         <thead><tr><th>Name</th><th>Date</th><th>Status</th><th>Created On</th><th>Actions</th></tr></thead>
                         <tbody>
-                            {myEvents.length === 0 && <tr><td colSpan="5" style={{textAlign: 'center'}}>You have not created any events yet.</td></tr>}
+                            {myEvents.length === 0 && <tr><td colSpan="5" style={{ textAlign: 'center' }}>You have not created any events yet.</td></tr>}
                             {myEvents.map(event => (
                                 <tr key={event.id}>
                                     <td>{event.name}</td><td>{new Date(event.date).toLocaleString('en-IN')}</td>
