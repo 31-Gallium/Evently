@@ -6,7 +6,9 @@ const serviceAccountString = process.env.FIREBASE_CREDENTIALS;
 if (!serviceAccountString) {
   throw new Error('FIREBASE_CREDENTIALS environment variable is not set.');
 }
-const serviceAccount = JSON.parse(serviceAccountString);
+// Programmatically fix the private key formatting before parsing
+const correctedString = serviceAccountString.replace(/\n/g, '\\n');
+const serviceAccount = JSON.parse(correctedString);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
