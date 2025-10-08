@@ -1,15 +1,25 @@
-import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
-import dotenv from 'dotenv';
 
 dotenv.config();
 
 const prisma = new PrismaClient();
 
+// CORS configuration
+const whitelist = ['http://localhost:3000', 'https://evently-kbj3.onrender.com'];
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
+
 const createApp = (admin) => {
   const app = express();
-  app.use(cors());
+  app.use(cors(corsOptions));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
