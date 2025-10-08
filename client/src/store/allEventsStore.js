@@ -41,7 +41,7 @@ const useAllEventsStore = create((set, get) => ({
     set(state => ({ allEvents: [eventWithTempId, ...state.allEvents] }));
 
     try {
-      const endpoint = user.role === 'ADMIN' ? '/admin/events' : '/organizer/events';
+      const endpoint = user.role === 'ADMIN' ? '/api/admin/events' : '/api/organizer/events';
       const headers = await getAuthHeader();
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'POST',
