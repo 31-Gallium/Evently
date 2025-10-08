@@ -21,6 +21,7 @@ import DashboardPage from './pages/DashboardPage';
 import AuthPage from './pages/AuthPage';
 import OrganizationPage from './pages/OrganizationPage';
 import SearchPage from './pages/SearchPage';
+import ProfilePage from './pages/ProfilePage';
 
 import CalendarPage from './pages/CalendarPage';
 
@@ -52,6 +53,7 @@ function App() {
                     <Route path="past-events" element={<PastEventsPage />} />
                     <Route path="organization/:organizerName" element={<OrganizationPage />} />
                     <Route path="search" element={<SearchPage />} />
+                    <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
                     
                     <Route 
                         path="bookings" 
