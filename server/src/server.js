@@ -142,6 +142,21 @@ const createApp = (admin) => {
       }
   }));
 
+  app.get('/api/events/tag/:tag', asyncHandler(async (req, res) => {
+      const { tag } = req.params;
+      const events = await prisma.event.findMany({
+          where: {
+              status: 'PUBLISHED',
+              tags: {
+                  contains: tag,
+              },
+          },
+          orderBy: { date: 'asc' },
+          take: 20, // Limit to 20 events per tag
+      });
+      res.json(events);
+  }));
+
   app.get('/api/organization/:organizerName', asyncHandler(async (req, res) => {
       const { organizerName } = req.params;
       const decodedName = decodeURIComponent(organizerName).replace(/-/g, ' ');
