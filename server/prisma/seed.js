@@ -81,7 +81,7 @@ async function main() {
     const usersForBooking = [...users].sort(() => 0.5 - Math.random()).slice(0, bookingsCount);
     const bookingsToCreate = usersForBooking.map(user => ({ userId: user.id, eventId: event.id }));
     if (bookingsToCreate.length > 0) {
-        await prisma.booking.createMany({ data: bookingsToCreate, skipDuplicates: true });
+        await prisma.booking.createMany({ data: bookingsToCreate });
     }
 
     // Create hypes for this event
@@ -89,7 +89,7 @@ async function main() {
     const usersForHype = [...users].sort(() => 0.5 - Math.random()).slice(0, hypeCount);
     const hypesToCreate = usersForHype.map(user => ({ userId: user.id, eventId: event.id }));
     if (hypesToCreate.length > 0) {
-        await prisma.userHype.createMany({ data: hypesToCreate, skipDuplicates: true });
+        await prisma.userHype.createMany({ data: hypesToCreate });
     }
     
     // Update counts for this event
