@@ -98,6 +98,12 @@
     cursor: pointer;
 }
 
+@media (max-width: 768px) {
+    .topBar {
+        display: none;
+    }
+}
+
 .loginButton:hover {
     background-color: var(--accent-color-hover);
 }
