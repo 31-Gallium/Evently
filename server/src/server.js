@@ -166,18 +166,14 @@ const createApp = (admin) => {
           return res.status(400).json({ error: 'Email is required.' });
       }
 
-      try {
-          const newUser = await prisma.user.create({
-              data: { email, firebaseUid: req.firebaseUid }
-          });
-          res.status(201).json(newUser);
-      } catch (error) {
-          if (error.code === 'P2002') {
-              const existingUser = await prisma.user.findUnique({ where: { firebaseUid: req.firebaseUid } });
-              return res.status(200).json(existingUser);
-          }
-          throw error;
-      }
+      // Use upsert to either create a new user or update the firebaseUid if the user was pre-seeded.
+      const user = await prisma.user.upsert({
+          where: { email },
+          update: { firebaseUid: req.firebaseUid },
+          create: { email, firebaseUid: req.firebaseUid },
+      });
+
+      res.status(200).json(user);
   }));
 
   app.get('/api/users/me', verifyFirebaseToken, getUser, (req, res) => {

@@ -22,6 +22,20 @@ async function main() {
   // 2. Create Users
   console.log('Creating users...');
   const users = [];
+
+  // Create the specific admin user
+  const adminUser = await prisma.user.create({
+    data: {
+      firebaseUid: 'admin-user-placeholder', // This will be updated on first login
+      email: 'thomasseb36@gmail.com',
+      role: 'ADMIN',
+      organizationName: 'Evently Admin',
+    },
+  });
+  users.push(adminUser);
+  console.log('Created admin user.');
+
+  // Create other random users
   for (let i = 0; i < 320; i++) {
     const user = await prisma.user.create({
       data: {
