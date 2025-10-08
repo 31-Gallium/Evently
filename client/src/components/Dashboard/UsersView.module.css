@@ -67,6 +67,21 @@
     justify-content: center;
     font-weight: 600;
     margin-right: 1rem;
+    flex-shrink: 0; /* Prevent avatar from shrinking */
+}
+
+.userEmail {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    margin-right: 1rem;
+}
+
+.roleDropdownWrapper {
+    flex-shrink: 0; /* Prevent dropdown from shrinking */
 }
 
 .loadMoreButton {

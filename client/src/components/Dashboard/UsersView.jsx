@@ -127,17 +127,18 @@ export const UsersView = ({ user }) => {
                                         key={u.id}
                                         className={cardStyles.card}
                                     >
-                                        <div className={cardStyles.cardHeader}>
-                                            <div className={styles.avatar}>
-                                                {u.email.charAt(0).toUpperCase()}
-                                            </div>
-                                            <span className={styles.userEmail}>{u.email}</span>
-                                            <RoleDropdown
-                                                role={u.role}
-                                                onChange={(newRole) => handleRoleChange(u.id, newRole)}
-                                                disabled={u.firebaseUid === user.uid}
-                                            />
-                                        </div>
+                                                                                <div className={cardStyles.cardHeader}>
+                                                                                    <div className={styles.avatar}>
+                                                                                        {u.email.charAt(0).toUpperCase()}
+                                                                                    </div>
+                                                                                    <span className={styles.userEmail}>{u.email}</span>
+                                                                                    <div className={styles.roleDropdownWrapper}>
+                                                                                        <RoleDropdown 
+                                                                                            role={u.role} 
+                                                                                            onChange={(newRole) => handleRoleChange(u.id, newRole)} 
+                                                                                            disabled={u.firebaseUid === user.uid}
+                                                                                        />
+                                                                                    </div>                                        </div>
                                         <div className={cardStyles.cardBody}>
                                             <p>Organization: {u.organizationName || 'N/A'}</p>
                                             <p>Joined: {new Date(u.createdAt).toLocaleDateString('en-IN')}</p>
