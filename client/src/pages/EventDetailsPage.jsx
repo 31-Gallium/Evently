@@ -131,10 +131,6 @@ const EventDetailsPage = () => {
   };
 
 
-  if (loading) return <div className="details-page"><p>Loading event details...</p></div>;
-  if (error) return <div className="details-page"><p>Error: {error}</p></div>;
-  if (!event) return <div className="details-page"><p>Event not found.</p></div>;
-
   const { name, date, location, price, description, organizerName, imageUrl, capacity, ticketsSold, createdAt, hypeCount, tags } = event;
 
   const [currentImageUrl, setCurrentImageUrl] = useState('');
@@ -150,6 +146,10 @@ const EventDetailsPage = () => {
   const handleImageError = () => {
     setCurrentImageUrl(getFallbackImage(tags));
   };
+
+  if (loading) return <div className="details-page"><p>Loading event details...</p></div>;
+  if (error) return <div className="details-page"><p>Error: {error}</p></div>;
+  if (!event) return <div className="details-page"><p>Event not found.</p></div>;
 
   const formattedDate = new Date(date).toLocaleString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
   const formattedPrice = price > 0 ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(price) : 'Free Event';
