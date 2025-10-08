@@ -24,7 +24,6 @@ const corsOptions = {
 
 const createApp = (admin) => {
   const app = express();
-  app.options('*', cors(corsOptions)); // enable pre-flight
   app.use(cors(corsOptions));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
