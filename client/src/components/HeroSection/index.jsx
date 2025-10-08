@@ -36,6 +36,7 @@ const HeroSection = ({ featuredEvent }) => {
     return (
         <div className={styles.hero}>
             <img 
+                key={currentImageUrl} // Add key to force re-render on src change
                 src={currentImageUrl || getFallbackImage(featuredEvent?.tags, 'landscape')} 
                 alt={name}
                 className={styles.heroImage}

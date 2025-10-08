@@ -68,7 +68,7 @@ const StandardEventCard = ({ event, isBooked, isPast = false }) => {
             onClick={handleSelectEvent}
         >
             <div className="event-card-image-container">
-                <img src={currentImageUrl || getFallbackImage(tagsString, 'landscape')} alt={name} className="event-card-image" onError={handleImageError} />
+                <img key={currentImageUrl} src={currentImageUrl || getFallbackImage(tagsString, 'landscape')} alt={name} className="event-card-image" onError={handleImageError} />
                 <button className={`hype-button ${isHyped ? 'hyped' : ''}`} onClick={handleHype}>
                     {Icons.heart}
                 </button>

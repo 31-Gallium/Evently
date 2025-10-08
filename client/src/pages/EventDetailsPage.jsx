@@ -160,7 +160,7 @@ const EventDetailsPage = () => {
         <div className="details-content">
           <h1 className="details-page-title">{name}</h1>
           <div className="details-banner">
-            <img src={currentImageUrl} alt={name} className="details-banner-image" onError={handleImageError} />
+            <img key={currentImageUrl} src={currentImageUrl} alt={name} className="details-banner-image" onError={handleImageError} />
           </div>
           <div className="details-actions">
             <button className={`action-button ${isHyped ? 'hyped' : ''}`} onClick={handleHype}>
