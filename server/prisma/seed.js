@@ -68,15 +68,15 @@ async function main() {
     const location = locations[i % locations.length];
     const organizer = organizerUsers[i % organizerUsers.length];
     const date = new Date(2025, 10, randomInRange(1, 30), randomInRange(10, 20), 0, 0);
-    eventsData.push({
-      name: `${template.title} #${Math.floor(i / eventTemplates.length) + 1}`,
-      date: date, location: location, price: template.basePrice + randomInRange(-200, 200),
-      description: `Join us for a unique experience at the ${template.title}.`,
-      organizerName: organizer.organizationName || 'Evently', organizerId: organizer.id,
       const tags = template.tags.split(',');
       const randomTag = tags[Math.floor(Math.random() * tags.length)].toLowerCase();
-      imageUrl: `https://source.unsplash.com/random/800x600?${randomTag}`,
-      isFeatured: Math.random() < 0.2, tags: template.tags, capacity: randomInRange(50, 500), status: 'PUBLISHED',
+      eventsData.push({
+        name: `${template.title} #${Math.floor(i / eventTemplates.length) + 1}`,
+        date: date, location: location, price: template.basePrice + randomInRange(-200, 200),
+        description: `Join us for a unique experience at the ${template.title}.`,
+        organizerName: organizer.organizationName || 'Evently', organizerId: organizer.id,
+        imageUrl: `https://source.unsplash.com/random/800x600?${randomTag}`,
+        isFeatured: Math.random() < 0.2, tags: template.tags, capacity: randomInRange(50, 500), status: 'PUBLISHED',
     });
   }
 
