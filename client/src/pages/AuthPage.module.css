@@ -60,6 +60,52 @@
     background-color: var(--accent-color-hover);
 }
 
+.googleButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    background-color: #fff;
+    color: #333;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-bottom: 1rem;
+}
+
+.googleButton:hover {
+    background-color: #f5f5f5;
+}
+
+.divider {
+    text-align: center;
+    color: var(--text-secondary);
+    margin: 1.5rem 0;
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background-color: var(--border-color);
+}
+
+.divider::before {
+    left: 0;
+}
+
+.divider::after {
+    right: 0;
+}
+
 .authError {
     color: var(--error-color);
     text-align: center;
