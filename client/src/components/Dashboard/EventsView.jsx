@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styles from './EventsView.module.css';
 import cardStyles from './Card.module.css';
 import useDebounce from '../../hooks/useDebounce';
-
-import { IconGrid, IconCalendar } from '../../utils/Icons';
+import { IconGrid } from '../../utils/Icons';
+import { getAuthHeader } from '../../utils/auth';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -19,24 +19,23 @@ export const EventsView = ({ user, onEdit, onEventsUpdate, setViewingEventId }) 
 
     const debouncedEventSearch = useDebounce(eventSearch, 300);
 
-import { getAuthHeader } from '../../utils/auth';
-
-// ... (imports)
-
-export const EventsView = ({ user, onEdit, onEventsUpdate, setViewingEventId }) => {
-    // ... (state)
-
     const fetchData = useCallback(async () => {
+        if (!user) return;
         setIsLoading(true);
         try {
             const headers = await getAuthHeader();
             const eventsRes = await fetch(`${API_BASE_URL}/admin/events`, { headers });
+            if (!eventsRes.ok) throw new Error('Failed to fetch events');
             setEvents(await eventsRes.json());
-        } catch (error) { console.error("Failed to fetch events:", error); }
+        } catch (error) {
+            console.error("Failed to fetch events:", error);
+        }
         setIsLoading(false);
-    }, []);
+    }, [user]);
 
-    useEffect(() => { fetchData(); }, [fetchData]);
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     const handleDeleteEvent = async (eventId) => {
         if (window.confirm('Are you sure you want to delete this event? This is irreversible.')) {
@@ -44,22 +43,21 @@ export const EventsView = ({ user, onEdit, onEventsUpdate, setViewingEventId }) 
                 const headers = await getAuthHeader();
                 const response = await fetch(`${API_BASE_URL}/admin/events/${eventId}`, { method: 'DELETE', headers });
                 if (!response.ok) throw new Error('Failed to delete event');
-                fetchData(); 
-                onEventsUpdate();
-            } catch (error) { alert(`Error: ${error.message}`); }
+                fetchData();
+                if (onEventsUpdate) onEventsUpdate();
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
         }
     };
 
-    // ... (rest of the component)
-};
-
     const filteredAndSortedEvents = useMemo(() => {
         return events
-            .filter(event => 
+            .filter(event =>
                 (debouncedEventSearch === '' || event.name.toLowerCase().includes(debouncedEventSearch.toLowerCase())) &&
-                (eventStatusFilter === 'all' || 
-                 (eventStatusFilter === 'upcoming' && new Date(event.date) >= new Date()) || 
-                 (eventStatusFilter === 'past' && new Date(event.date) < new Date()))
+                (eventStatusFilter === 'all' ||
+                    (eventStatusFilter === 'upcoming' && new Date(event.date) >= new Date()) ||
+                    (eventStatusFilter === 'past' && new Date(event.date) < new Date()))
             )
             .sort((a, b) => {
                 const [field, order] = sortOrder.split('-');
@@ -79,9 +77,7 @@ export const EventsView = ({ user, onEdit, onEventsUpdate, setViewingEventId }) 
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
-            transition: {
-                staggerChildren: 0.1
-            }
+            transition: { staggerChildren: 0.1 }
         }
     };
 

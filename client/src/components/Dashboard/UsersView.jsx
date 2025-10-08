@@ -6,6 +6,7 @@ import useDebounce from '../../hooks/useDebounce';
 import UsersTable from './UsersTable';
 import { IconGrid, IconList } from '../../utils/Icons';
 import RoleDropdown from './RoleDropdown';
+import { getAuthHeader } from '../../utils/auth';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -22,40 +23,42 @@ export const UsersView = ({ user }) => {
     const debouncedUserSearch = useDebounce(userSearch, 300);
     const debouncedOrganizationFilter = useDebounce(organizationFilter, 300);
 
-import { getAuthHeader } from '../../utils/auth';
-
-// ... (imports)
-
-export const UsersView = ({ user }) => {
-    // ... (state)
-
     const fetchData = useCallback(async () => {
+        if (!user) return;
         setIsLoading(true);
         try {
             const headers = await getAuthHeader();
             const usersRes = await fetch(`${API_BASE_URL}/admin/users`, { headers });
+            if (!usersRes.ok) throw new Error('Failed to fetch users');
             setUsers(await usersRes.json());
-        } catch (error) { console.error("Failed to fetch users:", error); }
+        } catch (error) {
+            console.error("Failed to fetch users:", error);
+        }
         setIsLoading(false);
-    }, []);
+    }, [user]);
 
-    useEffect(() => { fetchData(); }, [fetchData]);
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     const handleRoleChange = async (userId, newRole) => {
         try {
             const headers = await getAuthHeader();
-            const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/role`, { method: 'PUT', headers, body: JSON.stringify({ role: newRole }) });
+            const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/role`, {
+                method: 'PUT',
+                headers,
+                body: JSON.stringify({ role: newRole })
+            });
             if (!response.ok) throw new Error((await response.json()).error || 'Failed to update role');
-            fetchData();
-        } catch (error) { alert(`Error: ${error.message}`); }
+            fetchData(); // Refetch users to show the change
+        } catch (error) {
+            alert(`Error: ${error.message}`);
+        }
     };
-
-    // ... (rest of the component)
-};
 
     const filteredAndSortedUsers = useMemo(() => {
         return users
-            .filter(u => 
+            .filter(u =>
                 (debouncedUserSearch === '' || u.email.toLowerCase().includes(debouncedUserSearch.toLowerCase())) &&
                 (userRoleFilter === 'all' || u.role === userRoleFilter) &&
                 (debouncedOrganizationFilter === '' || (u.organizationName && u.organizationName.toLowerCase().includes(debouncedOrganizationFilter.toLowerCase())))
@@ -75,9 +78,7 @@ export const UsersView = ({ user }) => {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
-            transition: {
-                staggerChildren: 0.1
-            }
+            transition: { staggerChildren: 0.1 }
         }
     };
 
@@ -131,9 +132,9 @@ export const UsersView = ({ user }) => {
                                                 {u.email.charAt(0).toUpperCase()}
                                             </div>
                                             <span className={styles.userEmail}>{u.email}</span>
-                                            <RoleDropdown 
-                                                role={u.role} 
-                                                onChange={(newRole) => handleRoleChange(u.id, newRole)} 
+                                            <RoleDropdown
+                                                role={u.role}
+                                                onChange={(newRole) => handleRoleChange(u.id, newRole)}
                                                 disabled={u.firebaseUid === user.uid}
                                             />
                                         </div>

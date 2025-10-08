@@ -1,6 +1,6 @@
-
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from './EventApprovalsView.module.css';
+import { getAuthHeader } from '../../utils/auth';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -8,38 +8,38 @@ export const EventApprovalsView = ({ user, onEventsUpdate }) => {
     const [approvals, setApprovals] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-import { getAuthHeader } from '../../utils/auth';
-
-// ... (imports)
-
-export const EventApprovalsView = ({ user, onEventsUpdate }) => {
-    // ... (state)
-
     const fetchData = useCallback(async () => {
+        if (!user) return;
         setIsLoading(true);
         try {
             const headers = await getAuthHeader();
             const approvalsRes = await fetch(`${API_BASE_URL}/admin/approvals`, { headers });
+            if (!approvalsRes.ok) throw new Error('Failed to fetch approvals');
             setApprovals(await approvalsRes.json());
-        } catch (error) { console.error("Failed to fetch approvals:", error); }
+        } catch (error) {
+            console.error("Failed to fetch approvals:", error);
+        }
         setIsLoading(false);
-    }, []);
+    }, [user]);
 
-    useEffect(() => { fetchData(); }, [fetchData]);
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     const handleApprovalAction = async (eventId, action) => {
         try {
             const headers = await getAuthHeader();
-            await fetch(`${API_BASE_URL}/admin/events/${eventId}/${action}`, { method: 'POST', headers });
-            fetchData();
-            if (action === 'approve') {
-                onEventsUpdate();
+            const response = await fetch(`${API_BASE_URL}/admin/events/${eventId}/${action}`, { method: 'POST', headers });
+            if (!response.ok) throw new Error(`Failed to ${action} event.`);
+            
+            fetchData(); // Refetch the list of approvals
+            if (action === 'approve' && onEventsUpdate) {
+                onEventsUpdate(); // Trigger a refetch in the parent component
             }
-        } catch (error) { alert(`Error: ${error.message}`); }
+        } catch (error) {
+            alert(`Error: ${error.message}`);
+        }
     };
-
-    // ... (rest of the component)
-};
 
     return (
         <div className={styles.approvalsViewContainer}>
@@ -53,7 +53,7 @@ export const EventApprovalsView = ({ user, onEventsUpdate }) => {
                             <span className={styles.eventName}>{event.name}</span>
                         </div>
                         <div className={styles.cardBody}>
-                            <p>Organizer: {event.organizer?.email}</p>
+                            <p>Organizer: {event.organizer?.email || 'N/A'}</p>
                             <p>Submitted: {new Date(event.createdAt).toLocaleDateString('en-IN')}</p>
                         </div>
                         <div className={styles.cardFooter}>
