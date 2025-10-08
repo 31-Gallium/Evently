@@ -1,9 +1,12 @@
 import { createApp } from './server.js';
 import admin from 'firebase-admin';
-import { createRequire } from 'module';
 
-const require = createRequire(import.meta.url);
-const serviceAccount = require('../firebase-service-account.json');
+// Parse the service account from the environment variable
+const serviceAccountString = process.env.FIREBASE_CREDENTIALS;
+if (!serviceAccountString) {
+  throw new Error('FIREBASE_CREDENTIALS environment variable is not set.');
+}
+const serviceAccount = JSON.parse(serviceAccountString);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
