@@ -73,7 +73,9 @@ async function main() {
       date: date, location: location, price: template.basePrice + randomInRange(-200, 200),
       description: `Join us for a unique experience at the ${template.title}.`,
       organizerName: organizer.organizationName || 'Evently', organizerId: organizer.id,
-      imageUrl: `https://source.unsplash.com/random/800x600?${template.tags.split(',')[0].toLowerCase()}`,
+      const tags = template.tags.split(',');
+      const randomTag = tags[Math.floor(Math.random() * tags.length)].toLowerCase();
+      imageUrl: `https://source.unsplash.com/random/800x600?${randomTag}`,
       isFeatured: Math.random() < 0.2, tags: template.tags, capacity: randomInRange(50, 500), status: 'PUBLISHED',
     });
   }

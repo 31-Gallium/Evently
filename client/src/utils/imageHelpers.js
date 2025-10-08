@@ -27,9 +27,10 @@ const landscapeFallbackImages = {
 };
 
 export const getFallbackImage = (tagsString = '', orientation = 'portrait') => {
-    const firstTag = (tagsString || '').split(',')[0];
-    if (orientation === 'landscape') {
-        return landscapeFallbackImages[firstTag] || landscapeFallbackImages.default;
-    }
-    return fallbackImages[firstTag] || fallbackImages.default;
+    const tags = (tagsString || '').split(',').filter(t => t.trim() !== '');
+    const randomTag = tags[Math.floor(Math.random() * tags.length)];
+    
+    const imageMap = orientation === 'landscape' ? landscapeFallbackImages : fallbackImages;
+    
+    return imageMap[randomTag] || imageMap.default;
 };
