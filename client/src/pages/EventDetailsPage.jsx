@@ -7,25 +7,26 @@ import { IconFire, IconCheck, IconPlus, IconCalendar, IconMapPin, IconUsers, Ico
 import { getFallbackImage } from '../utils/imageHelpers';
 
 const EventDetailsPage = () => {
+  // All hooks must be at the top level
   const { id } = useParams();
   const navigate = useNavigate();
-  // Consolidate all required values from useAuth
   const { user, userProfile, refetchProfile, userHypes, userBookings, userWaitlist } = useAuth();
 
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [actionError, setActionError] = useState('');
+  const [currentImageUrl, setCurrentImageUrl] = useState('');
 
-  // Define API_BASE_URL once
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-  // Derived state should be computed directly or with useMemo for performance
+  // Derived state
   const isHyped = userHypes.has(parseInt(id));
   const isInWatchlist = userProfile?.watchlist?.some(item => item.eventId === parseInt(id));
   const isBooked = userBookings.has(parseInt(id));
   const isOnWaitlist = userWaitlist.has(parseInt(id));
 
+  // Effect for fetching event data
   useEffect(() => {
     const fetchEvent = async () => {
       if (!id) return;
@@ -33,7 +34,9 @@ const EventDetailsPage = () => {
       try {
         const response = await fetch(`${API_BASE_URL}/events/${id}`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        setEvent(await response.json());
+        const eventData = await response.json();
+        setEvent(eventData);
+        setCurrentImageUrl(eventData.imageUrl || getFallbackImage(eventData.tags));
       } catch (e) {
         setError(e.message);
       } finally {
@@ -43,7 +46,11 @@ const EventDetailsPage = () => {
     fetchEvent();
   }, [id, API_BASE_URL]);
 
-  // Unified handler for Hype
+  const handleImageError = () => {
+    setCurrentImageUrl(getFallbackImage(event?.tags));
+  };
+
+  // Handlers
   const handleHype = async () => {
     if (!user) { navigate('/login'); return; }
     try {
@@ -53,19 +60,15 @@ const EventDetailsPage = () => {
         headers
       });
       if (response.ok) {
-        refetchProfile(); // Refetch user profile to update hype status
-        // Optimistically update event hype count for immediate feedback
+        refetchProfile();
         setEvent(prev => ({ ...prev, hypeCount: isHyped ? prev.hypeCount - 1 : prev.hypeCount + 1 }));
-      } else {
-        throw new Error('Failed to update hype status');
-      }
+      } else { throw new Error('Failed to update hype status'); }
     } catch (err) {
       console.error(err);
       setActionError('Could not update hype status.');
     }
   };
 
-  // Unified handler for Watchlist
   const handleWatchlist = async () => {
     if (!user) { navigate('/login'); return; }
     try {
@@ -75,18 +78,14 @@ const EventDetailsPage = () => {
         headers,
         body: JSON.stringify({ eventId: parseInt(id) })
       });
-      if (response.ok) {
-        refetchProfile(); // Refetch user profile to update watchlist
-      } else {
-        throw new Error('Failed to update watchlist');
-      }
+      if (response.ok) { refetchProfile(); } 
+      else { throw new Error('Failed to update watchlist'); }
     } catch (err) {
       console.error(err);
       setActionError('Could not update watchlist.');
     }
   };
 
-  // Unified handler for Booking
   const handleBooking = async () => {
     if (!user) { navigate('/login'); return; }
     try {
@@ -96,9 +95,8 @@ const EventDetailsPage = () => {
         headers,
         body: JSON.stringify({ eventId: parseInt(id) })
       });
-      if (response.ok) {
-        refetchProfile(); // Refetch user profile to update bookings
-      } else {
+      if (response.ok) { refetchProfile(); } 
+      else { 
         const data = await response.json();
         throw new Error(data.error || 'Booking failed.');
       }
@@ -108,7 +106,6 @@ const EventDetailsPage = () => {
     }
   };
   
-  // Unified handler for Waitlist
   const handleWaitlistJoin = async () => {
     if (!user) { navigate('/login'); return; }
     try {
@@ -118,9 +115,8 @@ const EventDetailsPage = () => {
             headers,
             body: JSON.stringify({ eventId: parseInt(id) })
         });
-        if (response.ok) {
-            refetchProfile(); // Refetch to update waitlist status
-        } else {
+        if (response.ok) { refetchProfile(); } 
+        else { 
             const data = await response.json();
             throw new Error(data.error || 'Joining waitlist failed.');
         }
@@ -130,27 +126,13 @@ const EventDetailsPage = () => {
     }
   };
 
-
-  const { name, date, location, price, description, organizerName, imageUrl, capacity, ticketsSold, createdAt, hypeCount, tags } = event;
-
-  const [currentImageUrl, setCurrentImageUrl] = useState('');
-
-  useEffect(() => {
-    if (imageUrl) {
-      setCurrentImageUrl(imageUrl);
-    } else {
-      setCurrentImageUrl(getFallbackImage(tags));
-    }
-  }, [imageUrl, tags]);
-
-  const handleImageError = () => {
-    setCurrentImageUrl(getFallbackImage(tags));
-  };
-
+  // Early returns for loading and error states
   if (loading) return <div className="details-page"><p>Loading event details...</p></div>;
   if (error) return <div className="details-page"><p>Error: {error}</p></div>;
   if (!event) return <div className="details-page"><p>Event not found.</p></div>;
 
+  // Now it's safe to destructure the event object
+  const { name, date, location, price, description, organizerName, capacity, ticketsSold, createdAt, hypeCount } = event;
   const formattedDate = new Date(date).toLocaleString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
   const formattedPrice = price > 0 ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(price) : 'Free Event';
   const ticketsLeft = capacity - ticketsSold;
