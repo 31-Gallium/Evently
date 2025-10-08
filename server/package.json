@@ -9,6 +9,7 @@
     "dev": "nodemon src/index.js",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
     "build": "echo \"No build required for server\" && exit 0",
+    "postinstall": "prisma generate",
     "db:seed": "node prisma/seed.js"
   },
   "keywords": [],
