@@ -42,52 +42,7 @@
   .sectionTitle { font-size: 1.25rem; }
 }
 
-/* --- AURORA BACKGROUND (DARK THEME ONLY) --- */
-.auroraBackground {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    opacity: 0;
-    transition: opacity 500ms ease;
-}
-[data-theme='dark'] .auroraBackground {
-    opacity: 1;
-}
-.aurora_1, .aurora_2, .aurora_3 {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(100px);
-}
-.aurora_1 {
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(229, 9, 20, 0.2), transparent 70%);
-    top: -150px;
-    left: -100px;
-    animation: moveAurora1 20s infinite alternate ease-in-out;
-}
-.aurora_2 {
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(63, 81, 181, 0.15), transparent 70%);
-    bottom: -200px;
-    right: -150px;
-    animation: moveAurora2 25s infinite alternate ease-in-out;
-}
-.aurora_3 {
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(255, 152, 0, 0.1), transparent 70%);
-    top: 50%;
-    right: 10%;
-    animation: moveAurora3 15s infinite alternate ease-in-out;
-}
-@keyframes moveAurora1 { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(100px, 50px) rotate(45deg); } }
-@keyframes moveAurora2 { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(-80px, -40px) rotate(-60deg); } }
-@keyframes moveAurora3 { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(50px, -50px) rotate(30deg); } }
+
 
 
 /* --- TOP BAR (GLASSMORPHISM EFFECT) --- */
@@ -308,7 +263,7 @@
   right: 0;
   height: 140px;
   background: linear-gradient(to top, var(--background-primary) 20%, transparent);
-  z-index: -1; 
+  z-index: 0; 
 }
 .heroImage { width: 100%; height: 100%; object-fit: cover; }
 .heroContent {
