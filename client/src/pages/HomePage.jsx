@@ -19,7 +19,7 @@ const HomePage = () => {
     const featuredEvent = [...upcomingEvents, ...trendingEvents].find(e => e.imageUrl) || upcomingEvents?.[0];
 
     // Logic to determine dynamic categories
-    const { mainCategoryEvents, otherEvents } = useMemo(() => {
+    const { mainCategoryEvents } = useMemo(() => {
         const mainCategories = Object.entries(tagCounts)
             .filter(([, count]) => count >= 12)
             .map(([tag]) => tag);
