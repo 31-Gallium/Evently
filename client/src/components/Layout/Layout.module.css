@@ -7,6 +7,12 @@
     color: var(--text-primary);
     display: flex;
     flex-direction: column;
+    background: linear-gradient(to bottom, #000000, #1a1a1a);
+    transition: background 1s ease;
+}
+
+.scrolled {
+    background: linear-gradient(to bottom, #1a1a1a, #000000);
 }
 
 .mainContent {

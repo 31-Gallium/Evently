@@ -8,6 +8,7 @@ import ParticlesComponent from '../Particles';
 
 const Layout = () => {
     const scrollableContainerRef = useRef(null);
+    const isScrolled = useScrollStore((state) => state.isScrolled);
     const setIsScrolled = useScrollStore((state) => state.setIsScrolled);
 
     useEffect(() => {
@@ -24,7 +25,7 @@ const Layout = () => {
     }, [setIsScrolled]);
 
     return (
-        <div className={styles.appLayout} ref={scrollableContainerRef}>
+        <div className={`${styles.appLayout} ${isScrolled ? styles.scrolled : ''}`} ref={scrollableContainerRef}>
             <ParticlesComponent />
             <TopBar />
             <main className={styles.mainContent}>
