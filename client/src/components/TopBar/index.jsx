@@ -24,11 +24,16 @@ const TopBar = () => {
     const location = useLocation();
 
     useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 0);
+        const appLayout = document.querySelector('.appLayout_appLayout__p3_Y4');
+        const handleScroll = (event) => {
+            setIsScrolled(event.target.scrollTop > 0);
         };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+
+        appLayout?.addEventListener('scroll', handleScroll);
+
+        return () => {
+            appLayout?.removeEventListener('scroll', handleScroll);
+        };
     }, []);
 
     const handleLogout = async () => {
