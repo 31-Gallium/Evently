@@ -31,6 +31,7 @@
   border-radius: 8px;
   overflow: hidden;
   background-color: var(--background-secondary);
+  z-index: 1;
 }
 
 .details-page-title {

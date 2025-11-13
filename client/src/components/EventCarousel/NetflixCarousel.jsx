@@ -2,15 +2,13 @@
 import React, { useRef, useState, useMemo } from 'react';
 import './NetflixCarousel.css';
 
-const ITEMS_PER_PAGE = 6;
-
-const NetflixCarousel = ({ children, events }) => {
+const NetflixCarousel = ({ children, events, itemsPerPage = 6 }) => {
     const carouselRef = useRef(null);
     const [currentPage, setCurrentPage] = useState(1);
 
     const totalPages = useMemo(() => {
-        return Math.ceil(events.length / ITEMS_PER_PAGE);
-    }, [events]);
+        return Math.ceil(events.length / itemsPerPage);
+    }, [events, itemsPerPage]);
 
     const scroll = (direction) => {
         if (carouselRef.current) {

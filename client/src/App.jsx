@@ -25,19 +25,14 @@ import ProfilePage from './pages/ProfilePage';
 
 import CalendarPage from './pages/CalendarPage';
 
+useAllEventsStore.getState().fetchAllEvents();
+useTrendingEventsStore.getState().fetchTrendingEvents();
+useUpcomingEventsStore.getState().fetchUpcomingEvents();
+useBestSellingStore.getState().fetchBestSellingEvents();
+useCategoryStore.getState().fetchTagCounts();
+
 function App() {
   const { user, loading } = useAuth();
-  useEffect(() => {
-    document.body.classList.add('dark');
-  }, []);
-
-  useEffect(() => {
-    useAllEventsStore.getState().fetchAllEvents();
-    useTrendingEventsStore.getState().fetchTrendingEvents();
-    useUpcomingEventsStore.getState().fetchUpcomingEvents();
-    useBestSellingStore.getState().fetchBestSellingEvents();
-    useCategoryStore.getState().fetchTagCounts();
-  }, []);
 
     return (
         <BrowserRouter>

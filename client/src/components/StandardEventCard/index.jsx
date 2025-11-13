@@ -11,7 +11,7 @@ const Icons = {
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-const StandardEventCard = ({ event, isBooked, isPast = false }) => {
+const StandardEventCard = ({ event }) => {
     const navigate = useNavigate();
     const { id, name, date, imageUrl, tags: tagsString, description, price } = event;
     const { user, userHypes, refetchProfile } = useAuth();
@@ -20,12 +20,13 @@ const StandardEventCard = ({ event, isBooked, isPast = false }) => {
 
     useEffect(() => { setCurrentImageUrl(imageUrl); }, [imageUrl]);
 
-    const handleImageError = () => { setCurrentImageUrl(getFallbackImage(tagsString, 'landscape')); };
+    const handleImageError = ()_ => { setCurrentImageUrl(getFallbackImage(tagsString, 'landscape')); };
 
     const formattedDate = new Date(date).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
     const tags = tagsString ? tagsString.split(',').map(tag => tag.trim()) : [];
 
     const isHyped = userHypes.has(id);
+    const isPast = new Date(date) < new Date();
 
     const handleHype = async (e) => {
         e.preventDefault();
@@ -81,7 +82,6 @@ const StandardEventCard = ({ event, isBooked, isPast = false }) => {
                     {tags.map(tag => <span key={tag} className="event-card-tag">{tag}</span>)}
                 </div>
                 <p className="event-card-date">{formattedDate}</p>
-                {isBooked && !isPast && <div className="booked-badge">Booked</div>}
             </div>
         </div>
     );

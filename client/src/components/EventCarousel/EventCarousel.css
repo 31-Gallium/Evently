@@ -2,7 +2,6 @@
 .carousel-container {
     margin-bottom: 2rem;
     position: relative;
-    z-index: 1;
 }
 
 .carousel-header {
@@ -18,12 +17,17 @@
     color: var(--text-primary);
 }
 
-.see-all-button {
-    background: none;
-    border: none;
+.see-all-link {
     color: var(--accent-color);
-    cursor: pointer;
+    text-decoration: none;
     font-size: 1rem;
+    font-weight: 500;
+    transition: color var(--transition-speed);
+}
+
+.see-all-link:hover {
+    color: var(--accent-color-hover);
+    text-decoration: underline;
 }
 
 .carousel .swiper-container {

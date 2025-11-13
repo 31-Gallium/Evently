@@ -101,6 +101,7 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
+    z-index: 1;
 }
 
 .hype-button:hover {
@@ -112,7 +113,7 @@
 }
 
 .hype-button.hyped svg {
-    fill: white;
+    fill: var(--text-on-accent);
 }
 
 .price-badge {
@@ -125,6 +126,7 @@
     border-radius: 4px;
     font-size: 0.85rem;
     font-weight: 700;
+    z-index: 1;
 }
 
 .booked-badge {

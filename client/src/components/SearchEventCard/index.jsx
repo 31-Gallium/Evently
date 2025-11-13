@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { getFallbackImage } from '../../utils/imageHelpers';
 import './SearchEventCard.css';
 
-const SearchEventCard = ({ event, isBooked }) => {
+const SearchEventCard = ({ event }) => {
     const navigate = useNavigate();
     const { id, name, date, imageUrl, location, tags: tagsString } = event;
 
@@ -25,7 +25,6 @@ const SearchEventCard = ({ event, isBooked }) => {
                 <h3 className="search-event-card-title">{name}</h3>
                 <p className="search-event-card-date">{formattedDate}</p>
                 <p className="search-event-card-location">{location}</p>
-                {isBooked && <div className="booked-badge-search">Booked</div>}
             </div>
         </div>
     );

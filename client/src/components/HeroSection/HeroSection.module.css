@@ -40,7 +40,7 @@
     font-size: 4rem;
     font-weight: bold;
     margin-bottom: 1rem;
-    color: white !important;
+    color: var(--text-on-image);
 }
 
 .heroSubtitle {
@@ -50,7 +50,7 @@
 
 .ctaButton {
     background-color: var(--accent-color);
-    color: #fff;
+    color: var(--text-on-accent);
     border: none;
     padding: 1rem 2rem;
     border-radius: 5px;
@@ -68,5 +68,4 @@
     right: 0;
     height: 100px; /* Adjust height of the fade */
     background: linear-gradient(to top, var(--background-primary), transparent);
-    z-index: 0; /* Place it above the image and gradient but below content */
 }

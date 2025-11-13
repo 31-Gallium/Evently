@@ -41,7 +41,7 @@ const HomePage = () => {
 
         const otherEvents = allEvents.filter(event => !eventsInMainCategories.has(event.id));
 
-        return { mainCategoryEvents, otherEvents };
+        return { mainCategoryEvents };
     }, [tagCounts, allEvents]);
 
 
@@ -60,10 +60,6 @@ const HomePage = () => {
                         {mainCategoryEvents.map(category => (
                             <EventCarousel key={category.title} title={category.title} events={category.events} />
                         ))}
-
-                        {otherEvents.length > 0 && (
-                            <EventCarousel title="Other Events" events={otherEvents} />
-                        )}
                     </>
                 )}
             </div>
