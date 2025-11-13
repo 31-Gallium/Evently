@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import Particles from 'react-tsparticles';
-import { loadFull } from 'tsparticles';
+import { loadSlim } from 'tsparticles-slim';
 import styles from './Particles.module.css';
 import particleConfig from './particles-config';
 
 const ParticlesComponent = () => {
-    const particlesInit = async (main) => {
-        await loadFull(main);
-    };
+    const particlesInit = useCallback(async (engine) => {
+        await loadSlim(engine);
+    }, []);
 
     return (
         <div className={styles.particlesContainer}>
