@@ -21,6 +21,10 @@
   --transition-speed: 250ms;
 }
 
+#root {
+  background-color: transparent;
+}
+
 html, body {
   height: 100%;
   overflow: hidden; /* Prevent body scrolling */
