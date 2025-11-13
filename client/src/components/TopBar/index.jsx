@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { signOut } from "firebase/auth";
 import { auth } from '../../firebase';
 import { useAuth } from '../../context/AuthContext';
 import styles from './TopBar.module.css';
 import OrganizerRequestModal from '../OrganizerRequestModal';
 import SearchBar from '../SearchBar';
+import useScrollStore from '../../store/scrollStore';
 
 const Icons = {
     moon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>,
@@ -15,26 +16,12 @@ const Icons = {
     plus: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>,
 };
 
-const TopBar = ({ scrollableContainerRef }) => {
+const TopBar = () => {
     const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-    const [isScrolled, setIsScrolled] = useState(false);
     const [isOrganizerModalOpen, setIsOrganizerModalOpen] = useState(false);
-    const { user, userRole, userProfile, refetchProfile } = useAuth();
+    const { user, userRole, userProfile } = useAuth();
     const navigate = useNavigate();
-    const location = useLocation();
-
-    useEffect(() => {
-        const scrollableContainer = scrollableContainerRef.current;
-        const handleScroll = (event) => {
-            setIsScrolled(event.target.scrollTop > 0);
-        };
-
-        scrollableContainer?.addEventListener('scroll', handleScroll);
-
-        return () => {
-            scrollableContainer?.removeEventListener('scroll', handleScroll);
-        };
-    }, [scrollableContainerRef]);
+    const isScrolled = useScrollStore((state) => state.isScrolled);
 
     const handleLogout = async () => {
         try { await signOut(auth); navigate('/'); } 
