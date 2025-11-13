@@ -4,6 +4,7 @@ import TopBar from '../TopBar';
 import Footer from '../Footer';
 import styles from './Layout.module.css';
 import useScrollStore from '../../store/scrollStore';
+import ParticlesComponent from '../Particles';
 
 const Layout = () => {
     const scrollableContainerRef = useRef(null);
@@ -24,6 +25,7 @@ const Layout = () => {
 
     return (
         <div className={styles.appLayout} ref={scrollableContainerRef}>
+            <ParticlesComponent />
             <TopBar />
             <main className={styles.mainContent}>
                 <Outlet />
