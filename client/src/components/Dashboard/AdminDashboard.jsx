@@ -94,11 +94,11 @@ const AdminDashboard = ({ user, onEventsUpdate }) => {
                 onMouseLeave={handleMouseLeave}
             >
                 <nav className={styles.nav}>
-                    <a href="#" onClick={() => setAdminView('dashboard')} className={adminView === 'dashboard' ? styles.active : ''}><BarChart2 /> <span>Dashboard</span></a>
-                    <a href="#" onClick={() => setAdminView('organizerRequests')} className={adminView === 'organizerRequests' ? styles.active : ''}><Briefcase /> <span>Organizer Requests</span></a>
-                    <a href="#" onClick={() => setAdminView('approvals')} className={adminView === 'approvals' ? styles.active : ''}><CheckSquare /> <span>Event Approvals</span></a>
-                    <a href="#" onClick={() => setAdminView('events')} className={adminView === 'events' ? styles.active : ''}><Users /> <span>Events</span></a>
-                    <a href="#" onClick={() => setAdminView('users')} className={adminView === 'users' ? styles.active : ''}><Users /> <span>Users</span></a>
+                    <button onClick={() => setAdminView('dashboard')} className={adminView === 'dashboard' ? styles.active : ''}><BarChart2 /> <span>Dashboard</span></button>
+                    <button onClick={() => setAdminView('organizerRequests')} className={adminView === 'organizerRequests' ? styles.active : ''}><Briefcase /> <span>Organizer Requests</span></button>
+                    <button onClick={() => setAdminView('approvals')} className={adminView === 'approvals' ? styles.active : ''}><CheckSquare /> <span>Event Approvals</span></button>
+                    <button onClick={() => setAdminView('events')} className={adminView === 'events' ? styles.active : ''}><Users /> <span>Events</span></button>
+                    <button onClick={() => setAdminView('users')} className={adminView === 'users' ? styles.active : ''}><Users /> <span>Users</span></button>
                 </nav>
             </aside>
             <main className={styles.mainContent}>

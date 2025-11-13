@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import useAllEventsStore from './store/allEventsStore';
@@ -33,13 +33,6 @@ useCategoryStore.getState().fetchTagCounts();
 
 function App() {
   const { user, loading } = useAuth();
-
-    return (
-        <BrowserRouter>
-            <Routes>
-                {/* Auth routes do not use the main layout */}
-                <Route path="/login" element={<AuthPage />} />
-                <Route path="/signup" element={<AuthPage />} />
 
                 {/* Routes wrapped in the main layout */}
                 <Route element={<Layout />}>

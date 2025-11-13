@@ -7,7 +7,6 @@ import formStyles from './EventCreationForm.module.css';
 
 import ToggleSwitch from '../ToggleSwitch';
 import ImageDropzone from '../ImageDropzone/ImageDropzone';
-import { getAuthHeader } from '../../utils/auth';
 import useAllEventsStore from '../../store/allEventsStore';
 import { useAuth } from '../../context/AuthContext';
 
@@ -71,7 +70,6 @@ const EventFormModal = ({ event, dateStr, onClose }) => {
     }
 
     const isEdit = !!event;
-    const userRole = userProfile?.role;
 
     try {
         if (isEdit) {
