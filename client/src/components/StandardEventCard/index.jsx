@@ -20,7 +20,7 @@ const StandardEventCard = ({ event }) => {
 
     useEffect(() => { setCurrentImageUrl(imageUrl); }, [imageUrl]);
 
-    const handleImageError = ()_ => { setCurrentImageUrl(getFallbackImage(tagsString, 'landscape')); };
+    const handleImageError = () => { setCurrentImageUrl(getFallbackImage(tagsString, 'landscape')); };
 
     const formattedDate = new Date(date).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
     const tags = tagsString ? tagsString.split(',').map(tag => tag.trim()) : [];
